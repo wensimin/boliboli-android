@@ -1,5 +1,6 @@
 package com.github.wensimin.boliboli_android
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -18,12 +19,10 @@ private const val TAG: String = "main activity"
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tokenManager: TokenManager
     private lateinit var restManager: RestManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         restManager = RestManager(this)
-        tokenManager = TokenManager(this, this)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -41,13 +40,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         restManager.testRequest(
-            success = Consumer { Log.d(TAG, "test request ok") },
-            error = Consumer {
-                //error to login
-                tokenManager.login(
-                    Runnable {
-                        Log.d(TAG, "login ok")
-                    })
+            success = Consumer {
+                Log.d(TAG, "test request ok")
             })
     }
 

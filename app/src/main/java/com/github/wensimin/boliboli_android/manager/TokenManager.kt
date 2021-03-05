@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.preference.PreferenceManager
+import com.github.wensimin.boliboli_android.LoginActivity
 import net.openid.appauth.*
 import net.openid.appauth.connectivity.ConnectionBuilder
 import java.net.HttpURLConnection
@@ -31,31 +31,30 @@ val clientAuthentication: ClientSecretBasic = ClientSecretBasic("androidSecret")
 val testConfig = AppAuthConfiguration.Builder().setConnectionBuilder(TokenManager.TestConnectionBuilder()).build()
 
 class TokenManager(
-        private val context: Context,
-        private val caller: ActivityResultCaller,
-        private var success: Runnable = Runnable {},
-        private var error: Consumer<AuthorizationException?> = Consumer { e ->
-            Log.d(TAG, "oauth2 login error" + e?.errorDescription)
-        }
+    context: LoginActivity,
+    private var success: Runnable = Runnable {},
+    private var error: Consumer<AuthorizationException?> = Consumer { e ->
+        Log.d(TAG, "oauth2 login error " + e?.errorDescription)
+    }
 ) {
     private val serviceConfiguration: AuthorizationServiceConfiguration =
-            AuthorizationServiceConfiguration(
-                    Uri.parse("$OAUTH_SERVER/oauth2/authorize"),  // Authorization endpoint
-                    Uri.parse("$OAUTH_SERVER/oauth2/token") // Token endpoint
-            )
+        AuthorizationServiceConfiguration(
+            Uri.parse("$OAUTH_SERVER/oauth2/authorize"),  // Authorization endpoint
+            Uri.parse("$OAUTH_SERVER/oauth2/token") // Token endpoint
+        )
     private var authRequest: AuthorizationRequest = AuthorizationRequest.Builder(
-            serviceConfiguration,
-            "boliboli-android",  // Client ID
-            ResponseTypeValues.CODE,
-            Uri.parse("boliboli://oauth2") // Redirect URI
+        serviceConfiguration,
+        "boliboli-android",  // Client ID
+        ResponseTypeValues.CODE,
+        Uri.parse("boliboli://oauth2") // Redirect URI
     ).setScope("profile openid") //scope
-            .build()
+        .build()
 
     private var service: AuthorizationService = AuthorizationService(context, testConfig)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val authState: AuthState = AuthState()
-    private val launcher = caller.registerForActivityResult(object :
-            ActivityResultContract<AuthorizationRequest, Intent?>() {
+    private val launcher = context.registerForActivityResult(object :
+        ActivityResultContract<AuthorizationRequest, Intent?>() {
         override fun createIntent(context: Context, input: AuthorizationRequest): Intent {
             return service.getAuthorizationRequestIntent(authRequest)
         }
@@ -91,15 +90,12 @@ class TokenManager(
      * 使用code请求token并且save至authState
      */
     private fun retrieveTokens(
-            response: AuthorizationResponse,
-            success: Runnable,
-            error: Consumer<AuthorizationException?>
+        response: AuthorizationResponse,
+        success: Runnable,
+        error: Consumer<AuthorizationException?>
     ) {
         val tokenRequest: TokenRequest = response.createTokenExchangeRequest()
-
-        service.performTokenRequest(
-                tokenRequest, clientAuthentication
-        ) { tokenResponse, tokenException ->
+        service.performTokenRequest(tokenRequest, clientAuthentication) { tokenResponse, tokenException ->
             //save token
             authState.update(tokenResponse, tokenException)
             if (tokenException != null) {

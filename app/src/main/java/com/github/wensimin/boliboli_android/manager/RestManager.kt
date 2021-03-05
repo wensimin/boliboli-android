@@ -1,9 +1,11 @@
 package com.github.wensimin.boliboli_android.manager
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.preference.PreferenceManager
+import com.github.wensimin.boliboli_android.LoginActivity
+import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationService
@@ -30,10 +32,12 @@ class RestManager(private val context: Context) {
 
         override fun handleError(response: ClientHttpResponse) {
             when (response.statusCode) {
-                //TODO to login
-                HttpStatus.UNAUTHORIZED -> preferences.edit().remove(TOKEN_KEY).apply()
+                HttpStatus.UNAUTHORIZED -> {
+                    preferences.edit().remove(TOKEN_KEY).apply()
+                    throw AuthException()
+                }
                 //TODO error msg
-                else -> Toast.makeText(context, response.statusText, Toast.LENGTH_LONG).show()
+                else -> throw RuntimeException(response.statusText)
             }
         }
     }
@@ -42,21 +46,20 @@ class RestManager(private val context: Context) {
      * 测试用请求
      */
     fun testRequest(
-            success: Consumer<String>, error: Consumer<AuthorizationException?> = Consumer { e ->
-                Log.d(TAG, "oauth2 login error" + e?.errorDescription)
-            }
+        success: Consumer<String>, error: Consumer<AuthorizationException?> = Consumer { e ->
+            Log.d(TAG, "oauth2 login error" + e?.errorDescription)
+        }
     ) {
         val tokenJson = preferences.getString(TOKEN_KEY, null)
         if (tokenJson == null) {
             error.accept(null)
-            //TODO  to login
-            Log.d(TAG, "not login")
+            this.toLogin()
             return
         }
         val authState = AuthState.jsonDeserialize(tokenJson)
         authState.performActionWithFreshTokens(
-                service,
-                clientAuthentication
+            service,
+            clientAuthentication
         ) { accessToken, _, ex ->
             if (ex != null) {
                 error.accept(ex)
@@ -68,17 +71,29 @@ class RestManager(private val context: Context) {
             headers["Authorization"] = "Bearer $accessToken"
             val entity = HttpEntity<String>(headers)
             Thread {
-                val response = restTemplate.exchange(
+                try {
+                    val response = restTemplate.exchange(
                         "$RESOURCE_SERVER/public/test",
                         HttpMethod.GET,
                         entity,
                         String::class.java
-                )
-                Log.d(TAG, response.toString())
-                success.accept(response.toString())
+                    )
+                    Log.d(TAG, response.toString())
+                    success.accept(response.toString())
+                } catch (e: AuthException) {
+                    toLogin()
+                } catch (e: Exception) {
+                    error.accept(null)
+                    Log.e(TAG, e.localizedMessage ?: "未知错误")
+                }
             }.start()
 
         }
+    }
+
+    private fun toLogin() {
+        Log.d(TAG, "not token to login")
+        context.startActivity(Intent(context, LoginActivity::class.java))
     }
 
 }
