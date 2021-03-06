@@ -40,8 +40,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     // spring http client
     implementation group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
+    // https://search.maven.org/artifact/com.fasterxml.jackson.module/jackson-module-kotlin/2.12.2/bundle
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.2'
     // oauth2
     implementation 'net.openid:appauth:0.8.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'

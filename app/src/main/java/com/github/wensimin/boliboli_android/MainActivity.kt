@@ -1,18 +1,16 @@
 package com.github.wensimin.boliboli_android
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.github.wensimin.boliboli_android.manager.RestManager
-import com.github.wensimin.boliboli_android.manager.TokenManager
+import com.github.wensimin.boliboli_android.rest.dto.AuthToken
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.function.Consumer
 
 private const val TAG: String = "main activity"
@@ -39,10 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        restManager.testRequest(
-            success = Consumer {
-                Log.d(TAG, "test request ok")
-            })
+        restManager.request("public/test",AuthToken::class.java, Consumer { t -> Toast.makeText(this,"$t",Toast.LENGTH_LONG).show() })
     }
 
 
