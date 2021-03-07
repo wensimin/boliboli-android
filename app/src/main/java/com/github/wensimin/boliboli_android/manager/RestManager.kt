@@ -2,17 +2,13 @@ package com.github.wensimin.boliboli_android.manager
 
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
-import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationService
+import com.github.wensimin.boliboli_android.utils.toastShow
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -30,7 +26,6 @@ private const val TAG = "rest manager"
 
 class RestManager(private val context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private var service: AuthorizationService = AuthorizationService(context, testConfig)
     private val messageConverters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
 
@@ -61,8 +56,8 @@ class RestManager(private val context: Context) {
      * nobody 版本
      *  RestManager@request
      */
-    fun <O> request(endpoint: String, responseType: Class<O>, success: Consumer<O>) {
-        this.request(endpoint = endpoint, responseType = responseType, body = null, success = success)
+    fun <O> request(endpoint: String, responseType: Class<O>): O? {
+        return this.request(endpoint = endpoint, responseType = responseType, body = null)
     }
 
     /**
@@ -70,66 +65,37 @@ class RestManager(private val context: Context) {
      */
     fun <I, O> request(
         endpoint: String, method: HttpMethod = HttpMethod.GET, body: I? = null, responseType: Class<O>,
-        success: Consumer<O>,
         error: Consumer<RestError> = Consumer { e ->
-            Toast.makeText(context, "请求错误" + e.message, Toast.LENGTH_LONG).show()
+            toastShow(context, "请求错误 ${e.message}")
         }
-    ) {
-        val authState = getAuthState()
-        if (authState == null) {
-            this.toLogin()
-            return
+    ): O? {
+        return try {
+            val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
+            val accessToken = authState.requestAccessToken(clientAuthentication, preferences)
+            val restTemplate = RestTemplate()
+            val url = "$RESOURCE_SERVER/$endpoint"
+            restTemplate.messageConverters = messageConverters
+            restTemplate.errorHandler = globalErrorHandler
+            val headers = HttpHeaders()
+            headers["Authorization"] = "Bearer $accessToken"
+            val entity = HttpEntity<I>(body, headers)
+            restTemplate.exchange(url, method, entity, responseType).body
+        } catch (e: AuthException) {
+            toLogin()
+            null
+        } catch (e: Exception) {
+            error.accept(RestError("none", "未知错误"))
+            Log.e(TAG, e.localizedMessage ?: "未知错误")
+            null
         }
-        authState.performActionWithFreshTokens(
-            service,
-            clientAuthentication
-        ) { accessToken, _, ex ->
-            Thread {
-                try {
-                    if (ex != null) {
-                        throw AuthException()
-                    }
-                    val restTemplate = RestTemplate()
-                    val url = "$RESOURCE_SERVER/$endpoint"
-                    restTemplate.messageConverters = messageConverters
-                    restTemplate.errorHandler = globalErrorHandler
-                    val headers = HttpHeaders()
-                    headers["Authorization"] = "Bearer $accessToken"
-                    val entity = HttpEntity<I>(body, headers)
-                    val response = restTemplate.exchange(url, method, entity, responseType).body
-                    Handler(Looper.getMainLooper()).post {
-                        success.accept(response)
-                    }
-                } catch (e: AuthException) {
-                    toLogin()
-                } catch (e: Exception) {
-                    Handler(Looper.getMainLooper()).post {
-                        error.accept(RestError("none", "未知错误"))
-                    }
-                    Log.e(TAG, e.localizedMessage ?: "未知错误")
-                }
-            }.start()
-        }
-
-    }
-
-    /**
-     * 获取当前持久化的token
-     */
-    private fun getAuthState(): AuthState? {
-        val tokenJson = preferences.getString(TOKEN_KEY, null) ?: return null
-        return AuthState.jsonDeserialize(tokenJson)
     }
 
     /**
      * 去往登录activity
      */
     private fun toLogin() {
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(context, "未登录,请进行登录", Toast.LENGTH_LONG).show()
-            context.startActivity(Intent(context, LoginActivity::class.java))
-        }
-
+        toastShow(context, "未登录,请进行登录")
+        context.startActivity(Intent(context, LoginActivity::class.java))
     }
 
 }

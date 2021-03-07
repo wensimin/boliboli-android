@@ -2,7 +2,6 @@ package com.github.wensimin.boliboli_android
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,8 +9,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.github.wensimin.boliboli_android.manager.RestManager
 import com.github.wensimin.boliboli_android.rest.dto.AuthToken
+import com.github.wensimin.boliboli_android.utils.toastShow
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.function.Consumer
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 private const val TAG: String = "main activity"
 
@@ -37,7 +39,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        restManager.request("public/test",AuthToken::class.java, Consumer { t -> Toast.makeText(this,"$t",Toast.LENGTH_LONG).show() })
+        GlobalScope.launch {
+            val res = GlobalScope.async { restManager.request("public/test", AuthToken::class.java) }
+            Log.d(TAG, "async request")
+            toastShow(this@MainActivity, "${res.await()}")
+        }
     }
 
 

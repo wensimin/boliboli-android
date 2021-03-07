@@ -22,7 +22,7 @@ const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
  * 认证状态
  */
 private const val TAG: String = "TOKEN MANAGER"
-const val TOKEN_KEY = "TOKEN_KEY"
+
 
 // Client secret
 val clientAuthentication: ClientSecretBasic = ClientSecretBasic("androidSecret")
@@ -102,7 +102,7 @@ class TokenManager(
                 error.accept(tokenException)
             } else {
                 //save token
-                preferences.edit().putString(TOKEN_KEY, authState.jsonSerializeString()).apply()
+                TokenStatus.setAuthState(authState, preferences)
                 success.run()
             }
         }
