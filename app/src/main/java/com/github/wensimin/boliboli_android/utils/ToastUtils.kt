@@ -8,8 +8,8 @@ import android.widget.Toast
 /**
  * 使用主线程makeText
  */
-fun toastShow(context: Context, message: String, time: Int = Toast.LENGTH_LONG) {
+fun Context.toastShow(message: String, time: Int = Toast.LENGTH_LONG) {
     Handler(Looper.getMainLooper()).post {
-        Toast.makeText(context, message, time).show()
+        Toast.makeText(this, message, time).show()
     }
 }

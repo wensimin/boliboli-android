@@ -66,7 +66,7 @@ class RestManager(private val context: Context) {
     fun <I, O> request(
         endpoint: String, method: HttpMethod = HttpMethod.GET, body: I? = null, responseType: Class<O>,
         error: Consumer<RestError> = Consumer { e ->
-            toastShow(context, "请求错误 ${e.message}")
+            context.toastShow("请求错误 ${e.message}")
         }
     ): O? {
         return try {
@@ -94,7 +94,7 @@ class RestManager(private val context: Context) {
      * 去往登录activity
      */
     private fun toLogin() {
-        toastShow(context, "未登录,请进行登录")
+        context.toastShow("未登录,请进行登录")
         context.startActivity(Intent(context, LoginActivity::class.java))
     }
 
