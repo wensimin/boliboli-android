@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.preference.PreferenceManager
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
@@ -32,7 +33,11 @@ class RestManager(private val context: Context) {
     init {
         messageConverters.add(StringHttpMessageConverter(Charset.defaultCharset()))
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
-        mappingJackson2HttpMessageConverter.objectMapper.registerKotlinModule()
+        val objectMapper = mappingJackson2HttpMessageConverter.objectMapper
+        // 忽略多余json
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 使用kotlin模块,通过构建参数来给值
+        objectMapper.registerKotlinModule()
         messageConverters.add(mappingJackson2HttpMessageConverter)
         globalErrorHandler = object : ResponseErrorHandler {
             override fun hasError(response: ClientHttpResponse): Boolean {

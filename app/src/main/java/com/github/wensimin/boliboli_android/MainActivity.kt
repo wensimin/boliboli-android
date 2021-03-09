@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         GlobalScope.launch {
-            val res = GlobalScope.async { restManager.request("public/test", AuthToken::class.java) }
+            val res = GlobalScope.async { restManager.request("user", AuthToken::class.java) }
             Log.d(TAG, "async request")
             this@MainActivity.toastShow("${res.await()}")
         }
