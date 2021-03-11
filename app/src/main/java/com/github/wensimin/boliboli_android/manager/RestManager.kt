@@ -15,13 +15,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import java.nio.charset.Charset
+import java.time.Duration
 import java.util.function.Consumer
+
 
 private const val TAG = "rest manager"
 
@@ -29,6 +32,7 @@ class RestManager(private val context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val messageConverters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
+    private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
 
     init {
         messageConverters.add(StringHttpMessageConverter(Charset.defaultCharset()))
@@ -39,6 +43,9 @@ class RestManager(private val context: Context) {
         // 使用kotlin模块,通过构建参数来给值
         objectMapper.registerKotlinModule()
         messageConverters.add(mappingJackson2HttpMessageConverter)
+        clientHttpRequestFactory = SimpleClientHttpRequestFactory()
+        clientHttpRequestFactory.setReadTimeout(5000)
+        clientHttpRequestFactory.setConnectTimeout(3000)
         globalErrorHandler = object : ResponseErrorHandler {
             override fun hasError(response: ClientHttpResponse): Boolean {
                 return response.statusCode != HttpStatus.OK
@@ -51,7 +58,7 @@ class RestManager(private val context: Context) {
                         throw AuthException()
                     }
                     //TODO error msg
-                    else -> throw RuntimeException(response.statusText)
+                    else -> throw RuntimeException("未知错误")
                 }
             }
         }
@@ -77,10 +84,8 @@ class RestManager(private val context: Context) {
         return try {
             val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
             val accessToken = authState.requestAccessToken(clientAuthentication, preferences)
-            val restTemplate = RestTemplate()
             val url = "$RESOURCE_SERVER/$endpoint"
-            restTemplate.messageConverters = messageConverters
-            restTemplate.errorHandler = globalErrorHandler
+            val restTemplate = this.getTemplate()
             val headers = HttpHeaders()
             headers["Authorization"] = "Bearer $accessToken"
             val entity = HttpEntity<I>(body, headers)
@@ -93,6 +98,14 @@ class RestManager(private val context: Context) {
             Log.e(TAG, e.localizedMessage ?: "未知错误")
             null
         }
+    }
+
+    private fun getTemplate(): RestTemplate {
+        val restTemplate = RestTemplate()
+        restTemplate.messageConverters = messageConverters
+        restTemplate.errorHandler = globalErrorHandler
+        restTemplate.requestFactory = clientHttpRequestFactory
+        return restTemplate
     }
 
     /**
