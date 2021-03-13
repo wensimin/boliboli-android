@@ -22,7 +22,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import java.nio.charset.Charset
-import java.time.Duration
 import java.util.function.Consumer
 
 
@@ -75,7 +74,7 @@ class RestManager(private val context: Context) {
     /**
      * 进行请求
      */
-    fun <I, O> request(
+    private fun <I, O> request(
         endpoint: String, method: HttpMethod = HttpMethod.GET, body: I? = null, responseType: Class<O>,
         error: Consumer<RestError> = Consumer { e ->
             context.toastShow("请求错误 ${e.message}")

@@ -42,8 +42,8 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch {
             val res = GlobalScope.async { restManager.request("user", AuthToken::class.java) }
             Log.d(TAG, "async request")
-            res.await()?.let { e ->
-                this@MainActivity.toastShow("$e")
+            res.await()?.let { token ->
+                this@MainActivity.toastShow("$token")
             }
         }
     }
