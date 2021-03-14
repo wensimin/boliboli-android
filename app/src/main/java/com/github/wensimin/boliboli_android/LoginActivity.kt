@@ -5,10 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.github.wensimin.boliboli_android.manager.TokenManager
+import com.qmuiteam.qmui.arch.QMUIFragmentActivity
 
 private const val TAG = "login activity"
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : QMUIFragmentActivity() {
     private lateinit var tokenManager: TokenManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,11 +18,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun login(view: View) {
-        tokenManager.login(
-            Runnable {
-                Log.d(TAG, "login ok")
-                this.finish()
-            })
+        tokenManager.login({
+            Log.d(TAG, "login ok")
+            this.finish()
+        })
     }
 
     // 禁用返回

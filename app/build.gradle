@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -34,16 +35,20 @@ android {
         jvmTarget = '1.8'
     }
 }
+def qmui_arch_version = '2.0.0-alpha10'
 
 dependencies {
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // q mui
+    implementation 'com.qmuiteam:qmui:2.0.0-alpha10'
+    implementation "com.qmuiteam:arch:$qmui_arch_version"
+    kapt "com.qmuiteam:arch-compiler:$qmui_arch_version" // use annotationProcessor if java
     // spring http client
     implementation group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
-    // ex player
-    implementation 'com.google.android.exoplayer:exoplayer:2.13.2'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.2'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.2'
+    // exo player
+    implementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
     // https://search.maven.org/artifact/com.fasterxml.jackson.module/jackson-module-kotlin/2.12.2/bundle
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.2'
     // oauth2

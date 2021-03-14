@@ -5,15 +5,14 @@ import android.content.Intent
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
+import com.github.wensimin.boliboli_android.rest.dto.base.Page
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import com.github.wensimin.boliboli_android.utils.toastShow
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
@@ -29,22 +28,30 @@ private const val TAG = "rest manager"
 
 class RestManager(private val context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val messageConverters: MutableList<HttpMessageConverter<*>> = ArrayList()
+    private val converters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
     private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
+    private val errorCallback: Consumer<RestError>
+    private val jsonMapper: ObjectMapper
 
     init {
-        messageConverters.add(StringHttpMessageConverter(Charset.defaultCharset()))
-        val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
-        val objectMapper = mappingJackson2HttpMessageConverter.objectMapper
-        // 忽略多余json
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // 使用kotlin模块,通过构建参数来给值
-        objectMapper.registerKotlinModule()
-        messageConverters.add(mappingJackson2HttpMessageConverter)
-        clientHttpRequestFactory = SimpleClientHttpRequestFactory()
-        clientHttpRequestFactory.setReadTimeout(5000)
-        clientHttpRequestFactory.setConnectTimeout(3000)
+        converters.add(StringHttpMessageConverter(Charset.defaultCharset()))
+        converters.add(MappingJackson2HttpMessageConverter().apply {
+            // 忽略多余json
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            // 使用kotlin模块,通过构建参数来给值
+            objectMapper.registerKotlinModule()
+            // 存储一个mapper引用用于转化page
+            jsonMapper = objectMapper
+        })
+        clientHttpRequestFactory = SimpleClientHttpRequestFactory().apply {
+            setReadTimeout(5000)
+            setConnectTimeout(3000)
+        }
+        // 默认错误处理
+        errorCallback = Consumer { e ->
+            context.toastShow(e.message)
+        }
         globalErrorHandler = object : ResponseErrorHandler {
             override fun hasError(response: ClientHttpResponse): Boolean {
                 return response.statusCode != HttpStatus.OK
@@ -63,32 +70,31 @@ class RestManager(private val context: Context) {
         }
     }
 
+
     /**
-     * nobody 版本
-     *  RestManager@request
+     * 进行page请求
      */
-    fun <O> request(endpoint: String, responseType: Class<O>): O? {
-        return this.request(endpoint = endpoint, responseType = responseType, body = null)
+    fun <O> getPage(endpoint: String, responseType: Class<O>, params: Map<String, Any>? = null): Page<O>? {
+        val param = params?.map { (k, v) -> "$k=$v" }?.joinToString("&")
+        return request("$endpoint?$param", String::class.java)?.let {
+            jsonMapper.readValue(it, jsonMapper.typeFactory.constructParametricType(Page::class.java, responseType))
+        }
     }
 
     /**
      * 进行请求
      */
-    private fun <I, O> request(
-        endpoint: String, method: HttpMethod = HttpMethod.GET, body: I? = null, responseType: Class<O>,
-        error: Consumer<RestError> = Consumer { e ->
-            context.toastShow("请求错误 ${e.message}")
-        }
+    fun <O> request(
+        endpoint: String, responseType: Class<O>, method: HttpMethod = HttpMethod.GET, body: Any? = null,
+        error: Consumer<RestError> = errorCallback
     ): O? {
         return try {
-            val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
-            val accessToken = authState.requestAccessToken(clientAuthentication, preferences)
             val url = "$RESOURCE_SERVER/$endpoint"
-            val restTemplate = this.getTemplate()
-            val headers = HttpHeaders()
-            headers["Authorization"] = "Bearer $accessToken"
-            val entity = HttpEntity<I>(body, headers)
-            restTemplate.exchange(url, method, entity, responseType).body
+            val headers = this.getAuthHeader().apply {
+// 非get 使用json body
+                if (method != HttpMethod.GET) contentType = MediaType.APPLICATION_JSON
+            }
+            buildTemplate().exchange(url, method, HttpEntity(body, headers), responseType).body
         } catch (e: AuthException) {
             toLogin()
             null
@@ -99,12 +105,20 @@ class RestManager(private val context: Context) {
         }
     }
 
-    private fun getTemplate(): RestTemplate {
-        val restTemplate = RestTemplate()
-        restTemplate.messageConverters = messageConverters
-        restTemplate.errorHandler = globalErrorHandler
-        restTemplate.requestFactory = clientHttpRequestFactory
-        return restTemplate
+    private fun getAuthHeader(): HttpHeaders {
+        return HttpHeaders().apply {
+            val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
+            val accessToken = authState.requestAccessToken(clientAuthentication, preferences)
+            this["Authorization"] = "Bearer $accessToken"
+        }
+    }
+
+    private fun buildTemplate(): RestTemplate {
+        return RestTemplate().apply {
+            messageConverters = converters
+            errorHandler = globalErrorHandler
+            requestFactory = clientHttpRequestFactory
+        }
     }
 
     /**

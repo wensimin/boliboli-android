@@ -1,7 +1,7 @@
 package com.github.wensimin.boliboli_android.rest.dto.base
 
 data class Page<T>(
-    val content: List<T>,
+    var content: List<T>,
     val totalPages: Int,
     val totalElements: Int,
     val last: Boolean,
