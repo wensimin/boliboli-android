@@ -11,6 +11,7 @@ import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
 import com.github.wensimin.boliboli_android.rest.dto.base.Page
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
+import com.github.wensimin.boliboli_android.utils.logE
 import com.github.wensimin.boliboli_android.utils.toastShow
 import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
@@ -23,8 +24,6 @@ import org.springframework.web.client.RestTemplate
 import java.nio.charset.Charset
 import java.util.function.Consumer
 
-
-private const val TAG = "rest manager"
 
 class RestManager(private val context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -100,7 +99,7 @@ class RestManager(private val context: Context) {
             null
         } catch (e: Exception) {
             error.accept(RestError("none", "未知错误"))
-            Log.e(TAG, e.localizedMessage ?: "未知错误")
+            logE(e.localizedMessage ?: "未知错误")
             null
         }
     }

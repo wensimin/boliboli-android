@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.wensimin.boliboli_android.manager.RestManager
 import com.github.wensimin.boliboli_android.rest.dto.AuthToken
 import com.github.wensimin.boliboli_android.rest.dto.Voice
+import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.toastShow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,11 +26,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val res = async(Dispatchers.IO) {
                 restManager.request("user", AuthToken::class.java).also {
-                    Log.d("TAG", "token ${it?.name}")
+                    logD("token ${it?.name}")
                 }
                 restManager.getPage("voice", Voice::class.java, mapOf("page.number" to 2, "page.size" to 1))
             }
-            Log.d("TAG", "async request")
+            logD("async request")
             //TODO viewModel 不应该调用toastShow
             res.await()?.let { voices ->
                 getApplication<Application>().baseContext.toastShow("all voice ${voices.totalElements}, current page :${voices.number}")

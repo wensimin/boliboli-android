@@ -1,12 +1,11 @@
 package com.github.wensimin.boliboli_android
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.github.wensimin.boliboli_android.manager.TokenManager
+import com.github.wensimin.boliboli_android.utils.logD
 import com.qmuiteam.qmui.arch.QMUIFragmentActivity
 
-private const val TAG = "login activity"
 
 class LoginActivity : QMUIFragmentActivity() {
     private lateinit var tokenManager: TokenManager
@@ -18,7 +17,7 @@ class LoginActivity : QMUIFragmentActivity() {
 
     fun login(view: View) {
         tokenManager.login({
-            Log.d(TAG, "login ok")
+            logD("login ok")
             this.finish()
         })
     }

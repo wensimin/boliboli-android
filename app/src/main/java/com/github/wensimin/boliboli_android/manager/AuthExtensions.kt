@@ -1,9 +1,12 @@
 package com.github.wensimin.boliboli_android.manager
 
 import android.content.SharedPreferences
-import android.util.Log
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
-import net.openid.appauth.*
+import com.github.wensimin.boliboli_android.utils.logW
+import net.openid.appauth.AuthState
+import net.openid.appauth.ClientSecretBasic
+import net.openid.appauth.TokenRequest
+import net.openid.appauth.TokenResponse
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -11,7 +14,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import java.lang.Exception
 
 
 /**
@@ -33,7 +35,7 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
         tokenResponse.accessToken!!
     } catch (e: Exception) {
         // 所有错误包装授权错误返回
-        Log.e("get token", e.message ?: "")
+        logW("get token ${e.message}")
         throw AuthException()
     }
 }
