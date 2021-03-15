@@ -1,6 +1,7 @@
 package com.github.wensimin.boliboli_android.manager
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import net.openid.appauth.*
 import org.springframework.http.HttpEntity
@@ -32,6 +33,7 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
         tokenResponse.accessToken!!
     } catch (e: Exception) {
         // 所有错误包装授权错误返回
+        Log.e("get token", e.message ?: "")
         throw AuthException()
     }
 }
@@ -45,7 +47,8 @@ fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: Clie
     val body: MultiValueMap<String, String> = LinkedMultiValueMap()
     tokenRequest.requestParameters.forEach { (k, v) -> body.add(k, v) }
     val entity = HttpEntity(body, httpHeaders)
-    val response: ResponseEntity<String> = restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
+    val response: ResponseEntity<String> =
+        restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
     return TokenResponse.Builder(tokenRequest).fromResponseJsonString(response.body).build()
 }
 

@@ -6,6 +6,6 @@ data class Voice(
     val mainImg: String,
     val url: String,
     val tags: List<VoiceTag>,
-    var r18: Boolean = false,
-    var fileTree: String = ""
+    val r18: Boolean = false,
+    val fileTree: String = ""
 )

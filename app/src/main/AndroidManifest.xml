@@ -14,6 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BoliboliAndroid"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="android.notch_support"
+            android:value="true" />
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.34" />
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
+
         <activity
             android:name=".LoginActivity"
             android:launchMode="singleInstance" />

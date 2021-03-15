@@ -91,7 +91,7 @@ class RestManager(private val context: Context) {
         return try {
             val url = "$RESOURCE_SERVER/$endpoint"
             val headers = this.getAuthHeader().apply {
-// 非get 使用json body
+                // 非get 使用json body
                 if (method != HttpMethod.GET) contentType = MediaType.APPLICATION_JSON
             }
             buildTemplate().exchange(url, method, HttpEntity(body, headers), responseType).body

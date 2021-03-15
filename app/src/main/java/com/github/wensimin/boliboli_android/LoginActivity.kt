@@ -1,6 +1,5 @@
 package com.github.wensimin.boliboli_android
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
