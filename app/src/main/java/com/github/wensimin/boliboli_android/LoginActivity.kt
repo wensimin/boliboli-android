@@ -2,12 +2,12 @@ package com.github.wensimin.boliboli_android
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.github.wensimin.boliboli_android.manager.TokenManager
 import com.github.wensimin.boliboli_android.utils.logD
-import com.qmuiteam.qmui.arch.QMUIFragmentActivity
 
 
-class LoginActivity : QMUIFragmentActivity() {
+class LoginActivity : AppCompatActivity() {
     private lateinit var tokenManager: TokenManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
