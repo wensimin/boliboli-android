@@ -1,16 +1,16 @@
 package com.github.wensimin.boliboli_android
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.wensimin.boliboli_android.ui.base.BaseActivity
 import com.github.wensimin.boliboli_android.ui.dashboard.DashboardViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private var mode: ViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
