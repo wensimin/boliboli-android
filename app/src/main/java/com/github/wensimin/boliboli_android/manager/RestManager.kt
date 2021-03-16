@@ -125,7 +125,9 @@ class RestManager(private val context: Context) {
      */
     private fun toLogin() {
         context.toastShow("未登录,请进行登录")
-        context.startActivity(Intent(context, LoginActivity::class.java))
+        context.startActivity(Intent(context, LoginActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
     }
 
 }
