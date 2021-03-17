@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
+
     //FIXME 不应暴露可变liveData
     val text: MutableLiveData<String> = MutableLiveData<String>()
     private val restManager = RestManager(application.baseContext)
@@ -22,11 +23,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val res = async(Dispatchers.IO) {
                 restManager.request("user", AuthToken::class.java).also {
-                    logD("token ${it?.name}")
+                    this@DashboardViewModel.logD("token ${it?.name}")
                 }
                 restManager.getPage("voice", Voice::class.java, mapOf("page.number" to 2, "page.size" to 1))
             }
-            logD("async request")
+            this@DashboardViewModel.logD("async request")
             //TODO viewModel 不应该调用toastShow
             res.await()?.let { voices ->
                 getApplication<Application>().baseContext.toastShow("all voice ${voices.totalElements}, current page :${voices.number}")

@@ -49,8 +49,7 @@ fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: Clie
     val body: MultiValueMap<String, String> = LinkedMultiValueMap()
     tokenRequest.requestParameters.forEach { (k, v) -> body.add(k, v) }
     val entity = HttpEntity(body, httpHeaders)
-    val response: ResponseEntity<String> =
-        restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
+    val response: ResponseEntity<String> = restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
     return TokenResponse.Builder(tokenRequest).fromResponseJsonString(response.body).build()
 }
 

@@ -11,7 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : BaseActivity() {
-    private var mode: ViewModel? = null
+    private lateinit var mode: ViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
