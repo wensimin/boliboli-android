@@ -7,7 +7,10 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
-
+    // 启用数据绑定
+    dataBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.github.wensimin.boliboli_android"
         minSdkVersion 28

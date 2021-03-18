@@ -5,3 +5,4 @@ import android.view.View
 
 fun LayoutInflater.inflateNoParent(id: Int): View = inflate(id, null, false)
 
+
