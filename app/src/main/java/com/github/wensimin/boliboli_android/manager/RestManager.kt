@@ -59,7 +59,7 @@ class RestManager(private val context: Context) {
             override fun handleError(response: ClientHttpResponse) {
                 when (response.statusCode) {
                     HttpStatus.UNAUTHORIZED -> {
-                        preferences.edit().remove(TOKEN_KEY).apply()
+                        preferences.edit().remove(TokenManager.TOKEN_KEY).apply()
                         throw AuthException()
                     }
                     //TODO error msg
@@ -88,7 +88,7 @@ class RestManager(private val context: Context) {
         error: Consumer<RestError> = errorCallback
     ): O? {
         return try {
-            val url = "$RESOURCE_SERVER/$endpoint"
+            val url = "${TokenManager.RESOURCE_SERVER}/$endpoint"
             val headers = this.getAuthHeader().apply {
                 // 非get 使用json body
                 if (method != HttpMethod.GET) contentType = MediaType.APPLICATION_JSON
@@ -107,7 +107,7 @@ class RestManager(private val context: Context) {
     private fun getAuthHeader(): HttpHeaders {
         return HttpHeaders().apply {
             val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
-            val accessToken = authState.requestAccessToken(clientAuthentication, preferences)
+            val accessToken = authState.requestAccessToken(TokenManager.clientAuthentication, preferences)
             this["Authorization"] = "Bearer $accessToken"
         }
     }

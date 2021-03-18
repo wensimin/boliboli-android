@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.preference.PreferenceManager
 import com.github.wensimin.boliboli_android.LoginActivity
+import com.github.wensimin.boliboli_android.utils.logD
 import net.openid.appauth.*
 import net.openid.appauth.connectivity.ConnectionBuilder
 import java.net.HttpURLConnection
@@ -14,29 +15,27 @@ import java.net.URL
 import java.util.function.Consumer
 
 
-//TODO config
-const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
-const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
-
-/**
- * 认证状态
- */
-private const val TAG: String = "TOKEN MANAGER"
-
-
-// Client secret
-val clientAuthentication: ClientSecretBasic = ClientSecretBasic("androidSecret")
-
-// test config 无视https
-val testConfig = AppAuthConfiguration.Builder().setConnectionBuilder(TokenManager.TestConnectionBuilder()).build()
-
 class TokenManager(
     context: LoginActivity,
     private var success: Runnable = Runnable {},
     private var error: Consumer<AuthorizationException?> = Consumer { e ->
-        Log.d(TAG, "oauth2 login error " + e?.errorDescription)
+        logD("oauth2 login error ${e?.errorDescription}")
     }
 ) {
+    companion object {
+        //TODO config
+        const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
+        const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
+        const val TOKEN_KEY = "TOKEN_KEY"
+
+        // Client secret
+        val clientAuthentication: ClientSecretBasic = ClientSecretBasic("androidSecret")
+
+        // test config 无视https TODO 正式删除
+        val testConfig =
+            AppAuthConfiguration.Builder().setConnectionBuilder(TestConnectionBuilder()).build()
+    }
+
     private val serviceConfiguration: AuthorizationServiceConfiguration =
         AuthorizationServiceConfiguration(
             Uri.parse("$OAUTH_SERVER/oauth2/authorize"),  // Authorization endpoint
