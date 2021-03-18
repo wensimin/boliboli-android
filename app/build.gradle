@@ -11,6 +11,10 @@ android {
     dataBinding {
         enabled = true
     }
+    // 启用视图绑定
+    viewBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.github.wensimin.boliboli_android"
         minSdkVersion 28

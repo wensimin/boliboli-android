@@ -99,7 +99,7 @@ class RestManager(private val context: Context) {
             null
         } catch (e: Exception) {
             error.accept(RestError("none", "未知错误"))
-            logE(e.localizedMessage ?: "未知错误")
+            logE(e.message ?: "未知错误")
             null
         }
     }
