@@ -10,10 +10,9 @@ import com.github.wensimin.boliboli_android.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private val dashboardViewModel: DashboardViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        dashboardViewModel = activityViewModels<DashboardViewModel>().value
         return FragmentDashboardBinding.inflate(inflater).apply {
             model = dashboardViewModel
             lifecycleOwner = this@DashboardFragment

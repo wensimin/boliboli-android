@@ -1,6 +1,7 @@
 package com.github.wensimin.boliboli_android.rest.dto
 
 data class Voice(
+    val id: String,
     val title: String,
     val rjId: String,
     val mainImg: String,

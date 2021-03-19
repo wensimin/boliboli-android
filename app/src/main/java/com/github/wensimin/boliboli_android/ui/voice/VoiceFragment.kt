@@ -6,19 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.FragmentVoiceBinding
 
 class VoiceFragment : Fragment() {
 
-    private lateinit var voiceListViewModel: VoiceListViewModel
+    private val voiceListViewModel: VoiceListViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        voiceListViewModel = activityViewModels<VoiceListViewModel>().value
         val binding = FragmentVoiceBinding.inflate(inflater)
         voiceListViewModel.initData()
         binding.list.adapter = VoiceAdapter(voiceListViewModel)

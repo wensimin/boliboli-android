@@ -44,7 +44,7 @@ android {
 }
 def paging_version = "2.1.2"
 dependencies {
-    implementation "androidx.paging:paging-runtime:$paging_version" // For Kotlin use paging-runtime-ktx
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     // spring http client
     implementation group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
