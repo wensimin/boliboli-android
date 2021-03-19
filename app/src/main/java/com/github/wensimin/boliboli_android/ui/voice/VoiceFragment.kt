@@ -18,8 +18,11 @@ class VoiceFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentVoiceBinding.inflate(inflater)
-        voiceListViewModel.initData()
-        binding.list.adapter = VoiceAdapter(voiceListViewModel)
+        val voiceAdapter = VoiceAdapter()
+        voiceListViewModel.voices.observe(viewLifecycleOwner, {
+            voiceAdapter.submitList(it)
+        })
+        binding.list.adapter = voiceAdapter
         return binding.root
     }
 }

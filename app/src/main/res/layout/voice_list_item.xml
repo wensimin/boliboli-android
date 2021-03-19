@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="voice"
+            type="com.github.wensimin.boliboli_android.rest.dto.Voice" />
+    </data>
+
     <TextView
-        android:text="testtest"
+        android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@{voice.title}" />
 </layout>
