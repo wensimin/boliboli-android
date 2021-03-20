@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_voice">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_voice"
         android:name="com.github.wensimin.boliboli_android.ui.voice.VoiceFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_voice"
         tools:layout="@layout/fragment_voice" />
 
     <fragment

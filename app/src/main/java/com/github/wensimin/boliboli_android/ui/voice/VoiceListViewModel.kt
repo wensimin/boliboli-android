@@ -11,9 +11,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class VoiceListViewModel(application: Application) : AndroidViewModel(application) {
-
+    //TODO test pageSize
     private val pagedListConfig = PagedList.Config.Builder()
-        .setEnablePlaceholders(true)
         .setPageSize(1)
         .setPrefetchDistance(90)
         .build()
