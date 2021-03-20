@@ -14,7 +14,7 @@ class VoiceListViewModel(application: Application) : AndroidViewModel(applicatio
     //TODO test pageSize
     private val pagedListConfig = PagedList.Config.Builder()
         .setPageSize(1)
-        .setPrefetchDistance(90)
+        .setPrefetchDistance(1)
         .build()
     val voices =
         LivePagedListBuilder(VoiceDataSource.VoiceDataSourceFactory(application.baseContext), pagedListConfig).build()

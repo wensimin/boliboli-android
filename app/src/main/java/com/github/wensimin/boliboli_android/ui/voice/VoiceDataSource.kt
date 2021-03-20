@@ -7,7 +7,7 @@ import androidx.paging.PositionalDataSource
 import com.github.wensimin.boliboli_android.manager.RestManager
 import com.github.wensimin.boliboli_android.rest.dto.Voice
 
-//TODO rest manager to repository and position return
+//TODO rest manager to repository
 //FIXME 第一优先级,目前仅为测试代码
 class VoiceDataSource(context: Context) : PositionalDataSource<Voice>() {
     private val restManager: RestManager = RestManager(context)
