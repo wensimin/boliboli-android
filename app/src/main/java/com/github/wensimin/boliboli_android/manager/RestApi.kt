@@ -1,12 +1,11 @@
 package com.github.wensimin.boliboli_android.manager
 
-import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.github.wensimin.boliboli_android.Application
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
 import com.github.wensimin.boliboli_android.rest.dto.base.Page
@@ -25,7 +24,8 @@ import java.nio.charset.Charset
 import java.util.function.Consumer
 
 
-class RestManager(private val context: Context) {
+object RestApi {
+    private val context: android.app.Application = Application.context
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val converters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler

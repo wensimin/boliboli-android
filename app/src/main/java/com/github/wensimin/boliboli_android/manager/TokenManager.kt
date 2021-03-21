@@ -3,7 +3,6 @@ package com.github.wensimin.boliboli_android.manager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.preference.PreferenceManager
 import com.github.wensimin.boliboli_android.LoginActivity

@@ -1,18 +1,16 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PositionalDataSource
-import com.github.wensimin.boliboli_android.manager.RestManager
+import com.github.wensimin.boliboli_android.manager.RestApi
 import com.github.wensimin.boliboli_android.rest.dto.Voice
 
 //TODO rest manager to repository
 //FIXME 第一优先级,目前仅为测试代码
-class VoiceDataSource(context: Context) : PositionalDataSource<Voice>() {
-    private val restManager: RestManager = RestManager(context)
+class VoiceDataSource : PositionalDataSource<Voice>() {
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<Voice>) {
-        val page = restManager.getPage(
+        val page = RestApi.getPage(
             "voice", Voice::class.java, mapOf(
                 "page.number" to 0,
                 "page.size" to params.pageSize
@@ -25,7 +23,7 @@ class VoiceDataSource(context: Context) : PositionalDataSource<Voice>() {
     }
 
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<Voice>) {
-        val page = restManager.getPage(
+        val page = RestApi.getPage(
             "voice", Voice::class.java, mapOf(
                 "page.number" to params.startPosition / params.loadSize,
                 "page.size" to params.loadSize
@@ -44,7 +42,7 @@ class VoiceDataSource(context: Context) : PositionalDataSource<Voice>() {
         override fun create(): DataSource<Int, Voice> {
 //            voiceDataSource = VoiceDataSource(context)
 //            voiceLiveData.postValue(voiceDataSource)
-            return VoiceDataSource(context)
+            return VoiceDataSource()
         }
     }
 
