@@ -19,8 +19,8 @@ class VoiceDataSource : PositionalDataSource<Voice>() {
         page?.let {
             callback.onResult(it.content, 0, it.totalElements)
         }
-
     }
+
 
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<Voice>) {
         val page = RestApi.getPage(

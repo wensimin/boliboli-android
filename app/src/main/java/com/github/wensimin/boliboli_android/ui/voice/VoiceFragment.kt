@@ -22,6 +22,11 @@ class VoiceFragment : Fragment() {
         voiceListViewModel.voices.observe(viewLifecycleOwner, {
             voiceAdapter.submitList(it)
         })
+        //TODO 迁移到page3
+        binding.swipeRefresh.setOnRefreshListener {
+            voiceListViewModel.voices.value?.dataSource?.invalidate()
+            binding.swipeRefresh.isRefreshing = false
+        }
         binding.list.adapter = voiceAdapter
         return binding.root
     }
