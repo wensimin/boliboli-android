@@ -29,9 +29,10 @@ object RestApi {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val converters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
-    private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
+    val clientHttpRequestFactory: SimpleClientHttpRequestFactory
     private val errorCallback: Consumer<RestError>
     private val jsonMapper: ObjectMapper
+    private const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
 
     init {
         converters.add(StringHttpMessageConverter(Charset.defaultCharset()))
@@ -88,19 +89,28 @@ object RestApi {
         error: Consumer<RestError> = errorCallback
     ): O? {
         return try {
-            val url = "${TokenManager.RESOURCE_SERVER}/$endpoint"
+            val url = "${RESOURCE_SERVER}/$endpoint"
             val headers = this.getAuthHeader().apply {
                 // 非get 使用json body
                 if (method != HttpMethod.GET) contentType = MediaType.APPLICATION_JSON
             }
             buildTemplate().exchange(url, method, HttpEntity(body, headers), responseType).body
-        } catch (e: AuthException) {
-            toLogin()
-            null
         } catch (e: Exception) {
+            errorHandler(e, error)
+            return null
+        }
+    }
+
+    /**
+     * 错误处理,目前仅处理auth,其他错误全部按未知处理
+     */
+    private fun errorHandler(e: Exception, error: Consumer<RestError>) {
+        if (e is AuthException) {
+            toLogin()
+        } else {
+            //TODO 错误信息处理
             error.accept(RestError("none", "未知错误"))
             logE(e.message ?: "未知错误")
-            null
         }
     }
 

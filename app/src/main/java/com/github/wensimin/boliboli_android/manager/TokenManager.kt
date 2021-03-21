@@ -24,7 +24,6 @@ class TokenManager(
     companion object {
         //TODO config
         const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
-        const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
         const val TOKEN_KEY = "TOKEN_KEY"
 
         // Client secret

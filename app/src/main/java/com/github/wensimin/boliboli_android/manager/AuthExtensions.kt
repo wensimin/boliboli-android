@@ -2,17 +2,14 @@ package com.github.wensimin.boliboli_android.manager
 
 import android.content.SharedPreferences
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
-import com.github.wensimin.boliboli_android.utils.logW
 import net.openid.appauth.AuthState
 import net.openid.appauth.ClientSecretBasic
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 
 
@@ -33,15 +30,18 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
         this.update(tokenResponse, null)
         TokenStatus.setAuthState(this, preferences)
         tokenResponse.accessToken!!
-    } catch (e: Exception) {
-        // 所有错误包装授权错误返回
-        logW("get token ${e.message}")
-        throw AuthException()
+    } catch (e: HttpClientErrorException) {
+        // 对400错误码做包装授权错误
+        if (e.statusCode == HttpStatus.BAD_REQUEST) {
+            throw AuthException()
+        }
+        throw e
     }
 }
 
 fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: ClientSecretBasic): TokenResponse {
     val restTemplate = RestTemplate(true)
+    restTemplate.requestFactory = RestApi.clientHttpRequestFactory
     val requestHeaders = clientSecretBasic.getRequestHeaders(tokenRequest.clientId)
     val httpHeaders = HttpHeaders()
     requestHeaders.forEach { (k, v) -> httpHeaders.add(k, v) }
@@ -49,7 +49,8 @@ fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: Clie
     val body: MultiValueMap<String, String> = LinkedMultiValueMap()
     tokenRequest.requestParameters.forEach { (k, v) -> body.add(k, v) }
     val entity = HttpEntity(body, httpHeaders)
-    val response: ResponseEntity<String> = restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
+    val response: ResponseEntity<String> =
+        restTemplate.postForEntity(tokenRequest.configuration.tokenEndpoint.toString(), entity, String::class.java)
     return TokenResponse.Builder(tokenRequest).fromResponseJsonString(response.body).build()
 }
 

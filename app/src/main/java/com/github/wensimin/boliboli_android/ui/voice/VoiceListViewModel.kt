@@ -13,5 +13,4 @@ class VoiceListViewModel(application: Application) : AndroidViewModel(applicatio
         .build()
     val voices =
         LivePagedListBuilder(VoiceDataSource.VoiceDataSourceFactory(application.baseContext), pagedListConfig).build()
-
 }
