@@ -6,7 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import com.github.wensimin.boliboli_android.databinding.FragmentVoiceBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 
 class VoiceFragment : Fragment() {
 
@@ -17,17 +23,29 @@ class VoiceFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentVoiceBinding.inflate(inflater)
         val voiceAdapter = VoiceAdapter()
-        voiceListViewModel.voices.observe(viewLifecycleOwner, {
-            voiceAdapter.submitList(it)
-        })
-        //TODO 迁移到page3
-        binding.swipeRefresh.setOnRefreshListener {
-            voiceListViewModel.voices.value?.dataSource?.invalidate()
-            binding.swipeRefresh.isRefreshing = false
+        val binding = FragmentVoiceBinding.inflate(inflater).apply {
+            swipeRefresh.setOnRefreshListener {
+                voiceAdapter.refresh()
+            }
+            list.adapter = voiceAdapter
         }
-        binding.list.adapter = voiceAdapter
+        lifecycleScope.launchWhenCreated {
+            voiceListViewModel.voices.collectLatest {
+                voiceAdapter.submitData(it)
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            voiceAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swipeRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            voiceAdapter.loadStateFlow
+                .distinctUntilChangedBy { it.refresh }
+                .filter { it.refresh is LoadState.NotLoading }
+                .collect { binding.list.scrollToPosition(0) }
+        }
         return binding.root
     }
 }

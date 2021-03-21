@@ -2,7 +2,7 @@ package com.github.wensimin.boliboli_android.ui.voice
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
@@ -12,7 +12,7 @@ import com.github.wensimin.boliboli_android.rest.dto.Voice
  * voice adapter
  */
 class VoiceAdapter :
-    PagedListAdapter<Voice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
+    PagingDataAdapter<Voice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
 
     /**
      * 获取新的holder

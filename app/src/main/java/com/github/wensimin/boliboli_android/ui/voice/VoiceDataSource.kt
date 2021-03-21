@@ -1,49 +1,45 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
-import android.content.Context
-import androidx.paging.DataSource
-import androidx.paging.PositionalDataSource
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.github.wensimin.boliboli_android.manager.RestApi
 import com.github.wensimin.boliboli_android.rest.dto.Voice
+import com.github.wensimin.boliboli_android.utils.logI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
-//TODO rest manager to repository
-//FIXME 第一优先级,目前仅为测试代码
-class VoiceDataSource : PositionalDataSource<Voice>() {
-    override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<Voice>) {
-        val page = RestApi.getPage(
-            "voice", Voice::class.java, mapOf(
-                "page.number" to 0,
-                "page.size" to params.pageSize
+//TODO rest 请求改同步&存储库模式
+class VoiceDataSource : PagingSource<Int, Voice>() {
+    override fun getRefreshKey(state: PagingState<Int, Voice>): Int? = null
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voice> {
+        val loadSize = params.loadSize
+        logI("load voice page ${params.key ?: 0}")
+        val res = GlobalScope.async(Dispatchers.IO) {
+            RestApi.getPage(
+                "voice", Voice::class.java, mapOf(
+                    "page.number" to (params.key ?: 0),
+                    "page.size" to loadSize
+                )
             )
-        )
-        page?.let {
-            callback.onResult(it.content, 0, it.totalElements)
         }
+        val page = res.await()
+        if (page != null) {
+            val addPage = loadSize / NETWORK_PAGE_SIZE
+            return LoadResult.Page(
+                data = page.content,
+                prevKey = params.key,
+                nextKey = if (page.last) null else (page.number + addPage)
+            )
+        }
+        // TODO api可能改同步
+        return LoadResult.Error(RuntimeException("请求错误"))
     }
 
-
-    override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<Voice>) {
-        val page = RestApi.getPage(
-            "voice", Voice::class.java, mapOf(
-                "page.number" to params.startPosition / params.loadSize,
-                "page.size" to params.loadSize
-            )
-        )
-        page?.let {
-            callback.onResult(it.content)
-        }
-    }
-
-    //FIXME 注释部分效果不明 并没有作用
-    class VoiceDataSourceFactory(private val context: Context) : DataSource.Factory<Int, Voice>() {
-//        private val voiceLiveData = MutableLiveData<VoiceDataSource>()
-//        private lateinit var voiceDataSource: VoiceDataSource
-
-        override fun create(): DataSource<Int, Voice> {
-//            voiceDataSource = VoiceDataSource(context)
-//            voiceLiveData.postValue(voiceDataSource)
-            return VoiceDataSource()
-        }
+    companion object {
+        // 页数 TODO 测试定值1
+        const val NETWORK_PAGE_SIZE = 1
     }
 
 }
