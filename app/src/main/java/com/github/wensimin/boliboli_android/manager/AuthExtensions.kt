@@ -39,9 +39,11 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
     }
 }
 
+/**
+ * 用rest template 同步请求token
+ */
 fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: ClientSecretBasic): TokenResponse {
-    val restTemplate = RestTemplate(true)
-    restTemplate.requestFactory = RestApi.clientHttpRequestFactory
+    val restTemplate = RestApi.buildTemplate()
     val requestHeaders = clientSecretBasic.getRequestHeaders(tokenRequest.clientId)
     val httpHeaders = HttpHeaders()
     requestHeaders.forEach { (k, v) -> httpHeaders.add(k, v) }

@@ -15,6 +15,7 @@ import com.github.wensimin.boliboli_android.utils.toastShow
 import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -29,21 +30,24 @@ object RestApi {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val converters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
-    val clientHttpRequestFactory: SimpleClientHttpRequestFactory
+    private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
     private val errorCallback: Consumer<RestError>
     private val jsonMapper: ObjectMapper
     private const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
 
     init {
-        converters.add(StringHttpMessageConverter(Charset.defaultCharset()))
-        converters.add(MappingJackson2HttpMessageConverter().apply {
-            // 忽略多余json
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            // 使用kotlin模块,通过构建参数来给值
-            objectMapper.registerKotlinModule()
-            // 存储一个mapper引用用于转化page
-            jsonMapper = objectMapper
-        })
+        converters.apply {
+            add(StringHttpMessageConverter(Charset.defaultCharset()))
+            add(FormHttpMessageConverter())
+            add(MappingJackson2HttpMessageConverter().apply {
+                // 忽略多余json
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                // 使用kotlin模块,通过构建参数来给值
+                objectMapper.registerKotlinModule()
+                // 存储一个mapper引用用于转化page
+                jsonMapper = objectMapper
+            })
+        }
         clientHttpRequestFactory = SimpleClientHttpRequestFactory().apply {
             setReadTimeout(5000)
             setConnectTimeout(3000)
@@ -122,7 +126,7 @@ object RestApi {
         }
     }
 
-    private fun buildTemplate(): RestTemplate {
+    fun buildTemplate(): RestTemplate {
         return RestTemplate().apply {
             messageConverters = converters
             errorHandler = globalErrorHandler
