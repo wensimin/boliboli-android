@@ -1,6 +1,7 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,9 +27,7 @@ class VoiceFragment : Fragment() {
         val voiceAdapter = VoiceAdapter()
         val binding = FragmentVoiceBinding.inflate(inflater).apply {
             swipeRefresh.setOnRefreshListener {
-                //FIXME refresh后不触发下拉刷新  refresh&invalidate均不可行
                 voiceAdapter.refresh()
-//                voiceListViewModel.pageInvalidate()
             }
             list.adapter = voiceAdapter
         }
@@ -42,13 +41,17 @@ class VoiceFragment : Fragment() {
                 binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
             }
         }
-        //TODO scroll 归零,目前好像没啥作用
-        lifecycleScope.launchWhenCreated {
-            voiceAdapter.loadStateFlow
-                .distinctUntilChangedBy { it.refresh }
-                .filter { it.refresh is LoadState.NotLoading }
-                .collect { binding.list.scrollToPosition(0) }
-        }
+        // fixme page往上加载数据,滚动条的位置调整在前,见以下问题
+        // https://github.com/googlecodelabs/android-paging/issues/149
+//        lifecycleScope.launchWhenCreated {
+//            voiceAdapter.loadStateFlow
+//                .distinctUntilChangedBy { it.refresh }
+//                .filter {
+//                    it.refresh is LoadState.NotLoading
+//                }
+//                .collect {
+//                }
+//        }
         return binding.root
     }
 }

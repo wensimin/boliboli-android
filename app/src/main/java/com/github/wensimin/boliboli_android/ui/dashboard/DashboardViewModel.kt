@@ -22,13 +22,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val res = async(Dispatchers.IO) {
                 RestApi.request("user", AuthToken::class.java).also {
-                    this@DashboardViewModel.logD("token ${it?.name}")
+                    this@DashboardViewModel.logD("token ${it.data?.name}")
                 }
                 RestApi.getPage("voice", Voice::class.java, mapOf("page.number" to 2, "page.size" to 1))
             }
             this@DashboardViewModel.logD("async request")
             //TODO viewModel 不应该调用toastShow
-            res.await()?.let { voices ->
+            res.await().data?.let { voices ->
                 getApplication<Application>().baseContext.toastShow("all voice ${voices.totalElements}, current page :${voices.number}")
                 text.value = voices.content.first().title
             }

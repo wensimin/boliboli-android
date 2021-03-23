@@ -23,29 +23,31 @@ class TokenManager(
 ) {
     companion object {
         //TODO config
-        const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
         const val TOKEN_KEY = "TOKEN_KEY"
-
-        // Client secret
-        val clientAuthentication: ClientSecretBasic = ClientSecretBasic("androidSecret")
+        private const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
+        private const val CLIENT_ID = "boliboli-android"
+        private const val CLIENT_SECRET = "androidSecret"
 
         // test config 无视https TODO 正式删除
-        val testConfig =
+        private val testConfig =
             AppAuthConfiguration.Builder().setConnectionBuilder(TestConnectionBuilder()).build()
+
+        // Client secret
+        val clientAuthentication: ClientSecretBasic = ClientSecretBasic(CLIENT_SECRET)
+        private val serviceConfiguration: AuthorizationServiceConfiguration =
+            AuthorizationServiceConfiguration(
+                Uri.parse("$OAUTH_SERVER/oauth2/authorize"),  // Authorization endpoint
+                Uri.parse("$OAUTH_SERVER/oauth2/token") // Token endpoint
+            )
+        private var authRequest: AuthorizationRequest = AuthorizationRequest.Builder(
+            serviceConfiguration,
+            CLIENT_ID,  // Client ID
+            ResponseTypeValues.CODE,
+            Uri.parse("boliboli://oauth2") // Redirect URI
+        ).setScope("profile openid") //scope
+            .build()
     }
 
-    private val serviceConfiguration: AuthorizationServiceConfiguration =
-        AuthorizationServiceConfiguration(
-            Uri.parse("$OAUTH_SERVER/oauth2/authorize"),  // Authorization endpoint
-            Uri.parse("$OAUTH_SERVER/oauth2/token") // Token endpoint
-        )
-    private var authRequest: AuthorizationRequest = AuthorizationRequest.Builder(
-        serviceConfiguration,
-        "boliboli-android",  // Client ID
-        ResponseTypeValues.CODE,
-        Uri.parse("boliboli://oauth2") // Redirect URI
-    ).setScope("profile openid") //scope
-        .build()
 
     private var service: AuthorizationService = AuthorizationService(context, testConfig)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -106,7 +108,7 @@ class TokenManager(
     }
 
     /**
-     * 测试用conn 无视https
+     * TODO delete 测试用conn 无视https
      */
     class TestConnectionBuilder : ConnectionBuilder {
         override fun openConnection(uri: Uri): HttpURLConnection {

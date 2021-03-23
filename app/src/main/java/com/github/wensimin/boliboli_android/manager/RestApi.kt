@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.Application
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
+import com.github.wensimin.boliboli_android.rest.dto.RestResponse
 import com.github.wensimin.boliboli_android.rest.dto.base.Page
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import com.github.wensimin.boliboli_android.rest.exception.SystemException
@@ -23,7 +24,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import java.nio.charset.Charset
-import java.util.function.Consumer
 
 
 object RestApi {
@@ -32,7 +32,6 @@ object RestApi {
     private val converters: MutableList<HttpMessageConverter<*>> = ArrayList()
     private val globalErrorHandler: ResponseErrorHandler
     private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
-    private val errorCallback: Consumer<RestError>
     private val jsonMapper: ObjectMapper
     private const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
 
@@ -53,10 +52,7 @@ object RestApi {
             setReadTimeout(5000)
             setConnectTimeout(3000)
         }
-        // 默认错误处理
-        errorCallback = Consumer { e ->
-            context.toastShow(e.message ?: "")
-        }
+        // 错误监听
         globalErrorHandler = object : ResponseErrorHandler {
             override fun hasError(response: ClientHttpResponse): Boolean {
                 return response.statusCode != HttpStatus.OK
@@ -72,8 +68,8 @@ object RestApi {
                     else -> {
                         val restError = jsonMapper.readValue(response.body, RestError::class.java)
                         throw if (restError.error == "invalid_grant") AuthException() else SystemException(
-                            restError.type?:"none",
-                            restError.message?:"未知错误"
+                            restError.type ?: "none",
+                            restError.message ?: "未知错误"
                         )
                     }
                 }
@@ -84,11 +80,24 @@ object RestApi {
 
     /**
      * 进行page请求
+     * page 请求目前必然为get
      */
-    fun <O> getPage(endpoint: String, responseType: Class<O>, params: Map<String, Any>? = null): Page<O>? {
+    fun <O> getPage(
+        endpoint: String,
+        responseType: Class<O>,
+        params: Map<String, Any>? = null
+    ): RestResponse<Page<O>> {
         val param = params?.map { (k, v) -> "$k=$v" }?.joinToString("&")
-        return request("$endpoint?$param", String::class.java)?.let {
-            jsonMapper.readValue(it, jsonMapper.typeFactory.constructParametricType(Page::class.java, responseType))
+        return request("$endpoint?$param", String::class.java).let {
+            if (it.data != null) {
+                val page: Page<O> = jsonMapper.readValue(
+                    it.data,
+                    jsonMapper.typeFactory.constructParametricType(Page::class.java, responseType)
+                )
+                RestResponse(page)
+            } else {
+                RestResponse(error = it.error)
+            }
         }
     }
 
@@ -96,31 +105,30 @@ object RestApi {
      * 进行请求
      */
     fun <O> request(
-        endpoint: String, responseType: Class<O>, method: HttpMethod = HttpMethod.GET, body: Any? = null,
-        error: Consumer<RestError> = errorCallback
-    ): O? {
+        endpoint: String, responseType: Class<O>, method: HttpMethod = HttpMethod.GET, body: Any? = null
+    ): RestResponse<O> {
         return try {
             val url = "${RESOURCE_SERVER}/$endpoint"
             val headers = this.getAuthHeader().apply {
                 // 非get 使用json body
                 if (method != HttpMethod.GET) contentType = MediaType.APPLICATION_JSON
             }
-            buildTemplate().exchange(url, method, HttpEntity(body, headers), responseType).body
+            RestResponse(data = buildTemplate().exchange(url, method, HttpEntity(body, headers), responseType).body)
         } catch (e: Exception) {
-            errorHandler(e, error)
-            return null
+            //处理一轮错误
+            errorHandler(e)
+            RestResponse(error = e)
         }
     }
 
     /**
      * 错误处理,目前仅处理auth,其他错误全部按未知处理
      */
-    private fun errorHandler(e: Exception, error: Consumer<RestError>) {
+    private fun errorHandler(e: Exception) {
         if (e is AuthException) {
             toLogin()
         } else {
             //TODO 错误信息处理
-            error.accept(RestError())
             logE(e.message ?: "未知错误")
         }
     }

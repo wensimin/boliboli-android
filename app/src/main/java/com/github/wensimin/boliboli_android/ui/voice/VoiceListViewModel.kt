@@ -11,8 +11,7 @@ class VoiceListViewModel(application: Application) : AndroidViewModel(applicatio
             pageSize = VoiceDataSource.NETWORK_PAGE_SIZE
         ),
         pagingSourceFactory = {
-            voiceDataSource = VoiceDataSource()
-            return@Pager voiceDataSource
+            VoiceDataSource().also { voiceDataSource = it }
         }
     ).flow.cachedIn(viewModelScope)
 
