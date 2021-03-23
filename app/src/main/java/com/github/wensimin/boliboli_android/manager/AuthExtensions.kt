@@ -9,9 +9,8 @@ import net.openid.appauth.TokenResponse
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestTemplate
-import java.lang.Exception
 
 
 /**
@@ -46,6 +45,8 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
 fun asyncRefreshTokenRequest(tokenRequest: TokenRequest, clientSecretBasic: ClientSecretBasic): TokenResponse {
     val restTemplate = RestApi.buildTemplate()
     val requestHeaders = clientSecretBasic.getRequestHeaders(tokenRequest.clientId)
+    //TODO TEST
+//    restTemplate.errorHandler = DefaultResponseErrorHandler()
     val httpHeaders = HttpHeaders()
     requestHeaders.forEach { (k, v) -> httpHeaders.add(k, v) }
     httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED

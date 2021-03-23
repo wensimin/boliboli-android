@@ -1,3 +1,10 @@
 package com.github.wensimin.boliboli_android.rest.dto
 
-class RestError(val type: String, val message: String)
+/**
+ * rest Error
+ */
+class RestError(
+    val error: String? = null,
+    val type: String? = null,
+    val message: String? = null
+)

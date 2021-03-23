@@ -12,7 +12,13 @@ import kotlinx.coroutines.async
 //TODO rest 请求改同步&存储库模式
 class VoiceDataSource : PagingSource<Int, Voice>() {
     override fun getRefreshKey(state: PagingState<Int, Voice>): Int? {
-        return null
+        return state.anchorPosition?.let { anchorPosition ->
+            // This loads starting from previous page, but since PagingConfig.initialLoadSize spans
+            // multiple pages, the initial load will still load items centered around
+            // anchorPosition. This also prevents needing to immediately launch prepend due to
+            // prefetchDistance.
+            state.closestPageToPosition(anchorPosition)?.prevKey
+        }
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voice> {

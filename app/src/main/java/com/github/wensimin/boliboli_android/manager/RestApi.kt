@@ -10,6 +10,7 @@ import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.rest.dto.RestError
 import com.github.wensimin.boliboli_android.rest.dto.base.Page
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
+import com.github.wensimin.boliboli_android.rest.exception.SystemException
 import com.github.wensimin.boliboli_android.utils.logE
 import com.github.wensimin.boliboli_android.utils.toastShow
 import org.springframework.http.*
@@ -54,7 +55,7 @@ object RestApi {
         }
         // 默认错误处理
         errorCallback = Consumer { e ->
-            context.toastShow(e.message)
+            context.toastShow(e.message ?: "")
         }
         globalErrorHandler = object : ResponseErrorHandler {
             override fun hasError(response: ClientHttpResponse): Boolean {
@@ -68,7 +69,13 @@ object RestApi {
                         throw AuthException()
                     }
                     //TODO error msg
-                    else -> throw RuntimeException("未知错误")
+                    else -> {
+                        val restError = jsonMapper.readValue(response.body, RestError::class.java)
+                        throw if (restError.error == "invalid_grant") AuthException() else SystemException(
+                            restError.type?:"none",
+                            restError.message?:"未知错误"
+                        )
+                    }
                 }
             }
         }
@@ -113,7 +120,7 @@ object RestApi {
             toLogin()
         } else {
             //TODO 错误信息处理
-            error.accept(RestError("none", "未知错误"))
+            error.accept(RestError())
             logE(e.message ?: "未知错误")
         }
     }
@@ -144,5 +151,6 @@ object RestApi {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }
+
 
 }
