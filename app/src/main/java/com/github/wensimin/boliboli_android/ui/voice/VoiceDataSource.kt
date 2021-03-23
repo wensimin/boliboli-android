@@ -11,7 +11,9 @@ import kotlinx.coroutines.async
 
 //TODO rest 请求改同步&存储库模式
 class VoiceDataSource : PagingSource<Int, Voice>() {
-    override fun getRefreshKey(state: PagingState<Int, Voice>): Int? = null
+    override fun getRefreshKey(state: PagingState<Int, Voice>): Int? {
+        return null
+    }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voice> {
         val loadSize = params.loadSize

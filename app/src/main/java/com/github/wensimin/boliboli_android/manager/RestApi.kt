@@ -140,6 +140,7 @@ object RestApi {
     private fun toLogin() {
         context.toastShow("未登录,请进行登录")
         context.startActivity(Intent(context, LoginActivity::class.java).apply {
+            //TODO 理论上不应该给这个flag,会导致两个应用在场,可能需要测试验证
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }

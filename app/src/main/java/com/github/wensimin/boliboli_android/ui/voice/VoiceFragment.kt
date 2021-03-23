@@ -26,7 +26,9 @@ class VoiceFragment : Fragment() {
         val voiceAdapter = VoiceAdapter()
         val binding = FragmentVoiceBinding.inflate(inflater).apply {
             swipeRefresh.setOnRefreshListener {
+                //FIXME refresh后不触发下拉刷新  refresh&invalidate均不可行
                 voiceAdapter.refresh()
+//                voiceListViewModel.pageInvalidate()
             }
             list.adapter = voiceAdapter
         }
@@ -36,10 +38,11 @@ class VoiceFragment : Fragment() {
             }
         }
         lifecycleScope.launchWhenCreated {
-            voiceAdapter.loadStateFlow.collectLatest { loadStates ->
-                binding.swipeRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+            voiceAdapter.loadStateFlow.collectLatest {
+                binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
             }
         }
+        //TODO scroll 归零,目前好像没啥作用
         lifecycleScope.launchWhenCreated {
             voiceAdapter.loadStateFlow
                 .distinctUntilChangedBy { it.refresh }

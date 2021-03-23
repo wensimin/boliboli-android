@@ -11,6 +11,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import java.lang.Exception
 
 
 /**
@@ -32,7 +33,7 @@ fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferenc
         tokenResponse.accessToken!!
     } catch (e: HttpClientErrorException) {
         // 对400错误码做包装授权错误
-        if (e.statusCode == HttpStatus.BAD_REQUEST) {
+        if (e.statusCode == HttpStatus.UNAUTHORIZED) {
             throw AuthException()
         }
         throw e
