@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
 import com.github.wensimin.boliboli_android.rest.dto.Voice
 
@@ -36,7 +37,13 @@ class VoiceAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(voice: Voice?) {
             voice?.let {
-                binding.voice = it
+                binding.apply {
+                    this.voice = it
+                    Glide.with(mainImg)
+                        .load(it.mainImg)
+                        .into(mainImg);
+                }
+
             }
         }
     }

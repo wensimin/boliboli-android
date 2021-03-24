@@ -7,8 +7,8 @@ import com.github.wensimin.boliboli_android.rest.dto.Voice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.logI
 
-//TODO rest 存储库模式 query param
-class VoiceDataSource : PagingSource<Int, Voice>() {
+//TODO rest 存储库模式
+class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, Voice>() {
     override fun getRefreshKey(state: PagingState<Int, Voice>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.let { page ->
@@ -28,7 +28,8 @@ class VoiceDataSource : PagingSource<Int, Voice>() {
                 "page.number" to (params.key ?: 0),
                 "page.size" to loadSize,
                 "page.properties" to "rjId", //rjId 倒序
-                "page.direction" to "DESC"
+                "page.direction" to "DESC",
+                "keyword" to keyword
             )
         )
         res.data?.let {

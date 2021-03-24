@@ -3,19 +3,25 @@ package com.github.wensimin.boliboli_android.ui.voice
 import android.app.Application
 import androidx.lifecycle.*
 import androidx.paging.*
+import com.github.wensimin.boliboli_android.rest.dto.Voice
+import kotlinx.coroutines.flow.Flow
 
 class VoiceListViewModel(application: Application) : AndroidViewModel(application) {
-    private lateinit var voiceDataSource: VoiceDataSource
-    val voices = Pager(
-        config = PagingConfig(
-            pageSize = VoiceDataSource.NETWORK_PAGE_SIZE
-        ),
-        pagingSourceFactory = {
-            VoiceDataSource().also { voiceDataSource = it }
-        }
-    ).flow.cachedIn(viewModelScope)
+    //初始搜索无关键字
+    private var lastKeyword: String? = null
+    private var voices = search("")
 
-    fun pageInvalidate() {
-        voiceDataSource.invalidate()
+    fun search(keyword: String): Flow<PagingData<Voice>> {
+        if (keyword == lastKeyword) return voices
+        lastKeyword = keyword
+        voices = Pager(
+            config = PagingConfig(
+                pageSize = VoiceDataSource.NETWORK_PAGE_SIZE
+            ),
+            pagingSourceFactory = {
+                VoiceDataSource(keyword)
+            }
+        ).flow.cachedIn(viewModelScope)
+        return voices
     }
 }
