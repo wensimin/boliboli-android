@@ -6,11 +6,8 @@ import com.github.wensimin.boliboli_android.manager.RestApi
 import com.github.wensimin.boliboli_android.rest.dto.Voice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.logI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 
-//TODO rest 存储库模式
+//TODO rest 存储库模式 query param
 class VoiceDataSource : PagingSource<Int, Voice>() {
     override fun getRefreshKey(state: PagingState<Int, Voice>): Int? {
         return state.anchorPosition?.let {
@@ -26,17 +23,14 @@ class VoiceDataSource : PagingSource<Int, Voice>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voice> {
         val loadSize = params.loadSize
         logI("load voice page ${params.key ?: 0}")
-        val requestWork = GlobalScope.async(Dispatchers.IO) {
-            RestApi.getPage(
-                "voice", Voice::class.java, mapOf(
-                    "page.number" to (params.key ?: 0),
-                    "page.size" to loadSize,
-                    "page.properties" to "rjId", //rjId 倒序
-                    "page.direction" to "DESC"
-                )
+        val res = RestApi.getPage(
+            "voice", Voice::class.java, mapOf(
+                "page.number" to (params.key ?: 0),
+                "page.size" to loadSize,
+                "page.properties" to "rjId", //rjId 倒序
+                "page.direction" to "DESC"
             )
-        }
-        val res = requestWork.await()
+        )
         res.data?.let {
             val addPage = loadSize / NETWORK_PAGE_SIZE
             return LoadResult.Page(

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.Application
 import com.github.wensimin.boliboli_android.LoginActivity
+import com.github.wensimin.boliboli_android.rest.dto.ErrorType
 import com.github.wensimin.boliboli_android.rest.dto.RestError
 import com.github.wensimin.boliboli_android.rest.dto.RestResponse
 import com.github.wensimin.boliboli_android.rest.dto.base.Page
@@ -14,6 +15,8 @@ import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import com.github.wensimin.boliboli_android.rest.exception.SystemException
 import com.github.wensimin.boliboli_android.utils.logE
 import com.github.wensimin.boliboli_android.utils.toastShow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.SimpleClientHttpRequestFactory
@@ -23,6 +26,7 @@ import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
+import java.io.InputStream
 import java.nio.charset.Charset
 
 
@@ -64,17 +68,24 @@ object RestApi {
                         preferences.edit().remove(TokenManager.TOKEN_KEY).apply()
                         throw AuthException()
                     }
-                    //TODO error msg
                     else -> {
-                        val restError = jsonMapper.readValue(response.body, RestError::class.java)
-                        throw if (restError.error == "invalid_grant") AuthException() else SystemException(
-                            restError.type ?: "none",
-                            restError.message ?: "未知错误"
-                        )
+                        throwError(response.body)
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 从body 解析json error
+     */
+    private fun throwError(body: InputStream?) {
+        val restError = jsonMapper.readValue(body, RestError::class.java)
+        //处理刷新token过期
+        throw if (restError.error == "invalid_grant") AuthException() else SystemException(
+            restError.error ?: ErrorType.ERROR.name,
+            restError.message ?: "未知错误"
+        )
     }
 
 
@@ -82,13 +93,13 @@ object RestApi {
      * 进行page请求
      * page 请求目前必然为get
      */
-    fun <O> getPage(
+    fun <O> getPageAsync(
         endpoint: String,
         responseType: Class<O>,
         params: Map<String, Any>? = null
     ): RestResponse<Page<O>> {
         val param = params?.map { (k, v) -> "$k=$v" }?.joinToString("&")
-        return request("$endpoint?$param", String::class.java).let {
+        return requestAsync("$endpoint?$param", String::class.java).let {
             if (it.data != null) {
                 val page: Page<O> = jsonMapper.readValue(
                     it.data,
@@ -102,9 +113,33 @@ object RestApi {
     }
 
     /**
+     * get page 协程版本
+     */
+    suspend fun <O> getPage(
+        endpoint: String,
+        responseType: Class<O>,
+        params: Map<String, Any>? = null
+    ): RestResponse<Page<O>> {
+        return withContext(Dispatchers.IO) {
+            getPageAsync(endpoint, responseType, params)
+        }
+    }
+
+    /**
+     * 请求协程版本
+     */
+    suspend fun <O> request(
+        endpoint: String, responseType: Class<O>, method: HttpMethod = HttpMethod.GET, body: Any? = null
+    ): RestResponse<O> {
+        return withContext(Dispatchers.IO) {
+            requestAsync(endpoint, responseType, method, body)
+        }
+    }
+
+    /**
      * 进行请求
      */
-    fun <O> request(
+    fun <O> requestAsync(
         endpoint: String, responseType: Class<O>, method: HttpMethod = HttpMethod.GET, body: Any? = null
     ): RestResponse<O> {
         return try {
@@ -155,7 +190,7 @@ object RestApi {
     private fun toLogin() {
         context.toastShow("未登录,请进行登录")
         context.startActivity(Intent(context, LoginActivity::class.java).apply {
-            //TODO 理论上不应该给这个flag,会导致两个应用在场,可能需要测试验证
+            //TODO 这个flag似乎导致两个应用在场,需要验证
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }

@@ -9,8 +9,6 @@ import com.github.wensimin.boliboli_android.rest.dto.AuthToken
 import com.github.wensimin.boliboli_android.rest.dto.Voice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.toastShow
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,15 +18,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun changeText() {
         viewModelScope.launch {
-            val res = async(Dispatchers.IO) {
-                RestApi.request("user", AuthToken::class.java).also {
-                    this@DashboardViewModel.logD("token ${it.data?.name}")
-                }
-                RestApi.getPage("voice", Voice::class.java, mapOf("page.number" to 2, "page.size" to 1))
+            RestApi.request("user", AuthToken::class.java).also {
+                this@DashboardViewModel.logD("token ${it.data?.name}")
             }
-            this@DashboardViewModel.logD("async request")
+            val res = RestApi.getPage("voice", Voice::class.java, mapOf("page.number" to 2, "page.size" to 1))
             //TODO viewModel 不应该调用toastShow
-            res.await().data?.let { voices ->
+            res.data?.let { voices ->
                 getApplication<Application>().baseContext.toastShow("all voice ${voices.totalElements}, current page :${voices.number}")
                 text.value = voices.content.first().title
             }

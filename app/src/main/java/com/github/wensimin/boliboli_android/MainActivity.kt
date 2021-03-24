@@ -4,23 +4,26 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.wensimin.boliboli_android.databinding.ActivityMainBinding
 import com.github.wensimin.boliboli_android.ui.base.BaseActivity
 import com.github.wensimin.boliboli_android.ui.dashboard.DashboardViewModel
 import com.github.wensimin.boliboli_android.ui.voice.VoiceListViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-
+//警告 AS的静态检查对以下models无效,实际有使用
 class MainActivity : BaseActivity() {
-    private val mode: DashboardViewModel by viewModels()
+    val mode: DashboardViewModel by viewModels()
+
     // 音声list vm
-    private val voiceListViewModel: VoiceListViewModel by viewModels()
+    val voiceListViewModel: VoiceListViewModel by viewModels()
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val navController = findNavController(R.id.nav_host_fragment)
-        navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
     }
 
 }
