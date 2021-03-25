@@ -3,13 +3,13 @@ package com.github.wensimin.boliboli_android.ui.voice
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.github.wensimin.boliboli_android.manager.RestApi
-import com.github.wensimin.boliboli_android.rest.dto.Voice
+import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.logI
 
 //TODO rest 存储库模式
-class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, Voice>() {
-    override fun getRefreshKey(state: PagingState<Int, Voice>): Int? {
+class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, SimpleVoice>() {
+    override fun getRefreshKey(state: PagingState<Int, SimpleVoice>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.let { page ->
                 // 起始位置未必是0,需要判断前后key
@@ -20,11 +20,11 @@ class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, Voic
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voice> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimpleVoice> {
         val loadSize = params.loadSize
         logI("load voice page ${params.key ?: 0}")
         val res = RestApi.getPage(
-            "voice", Voice::class.java, mapOf(
+            "voice", SimpleVoice::class.java, mapOf(
                 "page.number" to (params.key ?: 0),
                 "page.size" to loadSize,
                 "page.properties" to "rjId", //rjId 倒序

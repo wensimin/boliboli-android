@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
-import com.github.wensimin.boliboli_android.rest.dto.Voice
+import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
 
 /**
  * voice adapter
  */
 class VoiceAdapter :
-    PagingDataAdapter<Voice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
+    PagingDataAdapter<SimpleVoice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
 
     /**
      * 获取新的holder
@@ -35,7 +35,7 @@ class VoiceAdapter :
      */
     class VoiceViewHolder(private val binding: VoiceListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(voice: Voice?) {
+        fun bind(voice: SimpleVoice?) {
             voice?.let {
                 binding.apply {
                     this.voice = it
@@ -49,10 +49,10 @@ class VoiceAdapter :
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Voice>() {
-            override fun areItemsTheSame(oldItem: Voice, newItem: Voice) = oldItem.id == newItem.id
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<SimpleVoice>() {
+            override fun areItemsTheSame(oldItem: SimpleVoice, newItem: SimpleVoice) = oldItem.id == newItem.id
 
-            override fun areContentsTheSame(oldItem: Voice, newItem: Voice) = oldItem == newItem
+            override fun areContentsTheSame(oldItem: SimpleVoice, newItem: SimpleVoice) = oldItem == newItem
         }
     }
 
