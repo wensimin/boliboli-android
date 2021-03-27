@@ -9,6 +9,14 @@ open class BaseActivity : AppCompatActivity() {
     private var count: Int = 0
 
     override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            onBack()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
+    private fun onBack() {
         Handler(mainLooper).postDelayed({ count = 0 }, 3000)
         if (++count > 1) {
             this.finishAffinity()

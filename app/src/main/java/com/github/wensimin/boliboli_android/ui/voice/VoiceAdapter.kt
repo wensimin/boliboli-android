@@ -1,14 +1,16 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.github.wensimin.boliboli_android.MainActivity
+import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
 import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
 
@@ -55,9 +57,22 @@ class VoiceAdapter :
                             .load(it.mainImg)
                             .into(this)
                     }
-
+                    this.root.setOnClickListener {
+                        // FIXME 是否使用fragment 存疑
+                        (it.context as MainActivity)
+                            .supportFragmentManager.beginTransaction().apply {
+                                replace(
+                                    R.id.container,
+                                    VoiceInfoFragment::class.java,
+                                    Bundle().apply {
+                                        //FIXME 无效
+                                        putString("id", voice.id)
+                                    })
+                                addToBackStack(null)
+                                commit()
+                            }
+                    }
                 }
-
             }
         }
     }
