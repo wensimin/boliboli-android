@@ -44,8 +44,8 @@ class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, Simp
     }
 
     companion object {
-        // 页数 TODO 测试定值1
-        const val NETWORK_PAGE_SIZE = 1
+        // 每页元素数
+        const val NETWORK_PAGE_SIZE = 10
     }
 
 }

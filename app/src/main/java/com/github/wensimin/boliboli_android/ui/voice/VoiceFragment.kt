@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +15,7 @@ import com.github.wensimin.boliboli_android.databinding.FragmentVoiceBinding
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 class VoiceFragment : Fragment() {
 
@@ -48,13 +51,28 @@ class VoiceFragment : Fragment() {
         }
     }
 
+    /**
+     * 进行搜索
+     */
     private fun search(keyword: String) {
         searchJob?.cancel()
+        clearIME()
         searchJob = viewLifecycleOwner.lifecycleScope.launch {
             viewModel.search(keyword).collectLatest {
                 voiceAdapter.submitData(it)
             }
         }
+    }
+
+    /**
+     * 关闭输入法和焦点
+     */
+    private fun clearIME() {
+        binding.searchText.clearFocus()
+        getSystemService(
+            requireContext(),
+            InputMethodManager::class.java
+        )?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
     }
 
     /**

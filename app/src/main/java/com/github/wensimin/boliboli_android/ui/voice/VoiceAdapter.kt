@@ -2,10 +2,13 @@ package com.github.wensimin.boliboli_android.ui.voice
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
 import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
 
@@ -14,6 +17,7 @@ import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
  */
 class VoiceAdapter :
     PagingDataAdapter<SimpleVoice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
+
 
     /**
      * 获取新的holder
@@ -35,13 +39,23 @@ class VoiceAdapter :
      */
     class VoiceViewHolder(private val binding: VoiceListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            private val options = RequestOptions().apply {
+                override(Target.SIZE_ORIGINAL)
+            }
+        }
+
         fun bind(voice: SimpleVoice?) {
             voice?.let {
                 binding.apply {
                     this.voice = it
-                    Glide.with(mainImg)
-                        .load(it.mainImg)
-                        .into(mainImg);
+                    mainImg.apply {
+                        Glide.with(this).setDefaultRequestOptions(options)
+                            .load(it.mainImg)
+                            .into(this)
+                    }
+
                 }
 
             }

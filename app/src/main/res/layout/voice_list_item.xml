@@ -21,7 +21,8 @@
             android:id="@+id/mainImg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/title" />
+            app:layout_constraintBottom_toTopOf="@id/title"
+            app:layout_constraintDimensionRatio="4:3" />
 
         <TextView
             android:id="@+id/title"
