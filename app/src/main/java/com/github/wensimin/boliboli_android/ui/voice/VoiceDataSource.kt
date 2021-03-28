@@ -3,7 +3,7 @@ package com.github.wensimin.boliboli_android.ui.voice
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.github.wensimin.boliboli_android.manager.RestApi
-import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
+import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.logI
 

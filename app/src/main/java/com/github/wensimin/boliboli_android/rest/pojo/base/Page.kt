@@ -1,4 +1,4 @@
-package com.github.wensimin.boliboli_android.rest.dto.base
+package com.github.wensimin.boliboli_android.rest.pojo.base
 
 data class Page<T>(
     var content: List<T>,

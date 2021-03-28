@@ -1,4 +1,4 @@
-package com.github.wensimin.boliboli_android.rest.dto
+package com.github.wensimin.boliboli_android.rest.pojo
 
 /**
  * rest Error

@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.wensimin.boliboli_android.Application
 import com.github.wensimin.boliboli_android.LoginActivity
-import com.github.wensimin.boliboli_android.rest.dto.ErrorType
-import com.github.wensimin.boliboli_android.rest.dto.RestError
-import com.github.wensimin.boliboli_android.rest.dto.RestResponse
-import com.github.wensimin.boliboli_android.rest.dto.base.Page
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import com.github.wensimin.boliboli_android.rest.exception.SystemException
+import com.github.wensimin.boliboli_android.rest.pojo.ErrorType
+import com.github.wensimin.boliboli_android.rest.pojo.RestError
+import com.github.wensimin.boliboli_android.rest.pojo.RestResponse
+import com.github.wensimin.boliboli_android.rest.pojo.base.Page
 import com.github.wensimin.boliboli_android.utils.logE
 import com.github.wensimin.boliboli_android.utils.toastShow
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +28,9 @@ import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import java.io.InputStream
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object RestApi {
@@ -44,6 +47,10 @@ object RestApi {
             add(StringHttpMessageConverter(Charset.defaultCharset()))
             add(FormHttpMessageConverter())
             add(MappingJackson2HttpMessageConverter().apply {
+                //时间格式
+                objectMapper.dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).apply {
+                    timeZone = TimeZone.getTimeZone("GMT+8")
+                }
                 // 忽略多余json
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 // 使用kotlin模块,通过构建参数来给值

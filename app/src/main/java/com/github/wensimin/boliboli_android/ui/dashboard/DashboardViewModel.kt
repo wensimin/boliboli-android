@@ -5,8 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.wensimin.boliboli_android.manager.RestApi
-import com.github.wensimin.boliboli_android.rest.dto.AuthToken
-import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
+import com.github.wensimin.boliboli_android.rest.pojo.AuthToken
+import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.toastShow
 import kotlinx.coroutines.launch

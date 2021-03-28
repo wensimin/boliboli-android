@@ -1,4 +1,4 @@
-package com.github.wensimin.boliboli_android.rest.dto
+package com.github.wensimin.boliboli_android.pojo
 
 data class SimpleVoice(
     val id: String,
@@ -8,10 +8,4 @@ data class SimpleVoice(
     val url: String,
     val r18: Boolean,
     val tags: List<SimpleVoiceTag>
-
-) {
-    data class SimpleVoiceTag(
-        val key: String,
-        val values: Set<String>
-    )
-}
+)

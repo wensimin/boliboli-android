@@ -3,7 +3,6 @@ package com.github.wensimin.boliboli_android.ui.voice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -13,7 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
-import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
+import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 
 /**
  * voice adapter

@@ -1,12 +1,15 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
-import android.app.Application
-import androidx.lifecycle.*
-import androidx.paging.*
-import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 import kotlinx.coroutines.flow.Flow
 
-class VoiceListViewModel(application: Application) : AndroidViewModel(application) {
+class VoiceListViewModel : ViewModel() {
     //初始搜索无关键字
     private var lastKeyword: String? = null
     private var voices = search("")
