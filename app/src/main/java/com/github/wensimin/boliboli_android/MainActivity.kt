@@ -32,6 +32,7 @@ class MainActivity : BaseActivity() {
         // get fragment
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!
         // setup custom navigator
+        // FIXME https://issuetracker.google.com/issues/80029773 等待官方方案
         val navigator = SaveStateFragmentNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment)
         navController.navigatorProvider.addNavigator(navigator)
         binding.navView.setupWithNavController(navController)
