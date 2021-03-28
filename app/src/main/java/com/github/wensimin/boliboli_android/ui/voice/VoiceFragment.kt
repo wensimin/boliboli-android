@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import com.github.wensimin.boliboli_android.databinding.FragmentVoiceBinding
 import kotlinx.coroutines.Job
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 class VoiceFragment : Fragment() {
 
     private val viewModel: VoiceListViewModel by activityViewModels()
-    private val voiceAdapter = VoiceAdapter()
+    private lateinit var voiceAdapter: VoiceAdapter
     private lateinit var binding: FragmentVoiceBinding
     private var searchJob: Job? = null
     override fun onCreateView(
@@ -79,6 +80,7 @@ class VoiceFragment : Fragment() {
      * 初始化分页adapter
      */
     private fun initAdapter() {
+        voiceAdapter = VoiceAdapter(findNavController())
         lifecycleScope.launchWhenCreated {
             voiceAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading

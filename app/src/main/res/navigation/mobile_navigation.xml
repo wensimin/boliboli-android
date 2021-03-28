@@ -9,7 +9,15 @@
         android:id="@+id/navigation_voice"
         android:name="com.github.wensimin.boliboli_android.ui.voice.VoiceFragment"
         android:label="@string/title_voice"
-        tools:layout="@layout/fragment_voice" />
+        tools:layout="@layout/fragment_voice">
+        <action
+            android:id="@+id/action_navigation_voice_to_voiceInfoFragment"
+            app:destination="@id/voiceInfoFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -22,4 +30,9 @@
         android:name="com.github.wensimin.boliboli_android.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/voiceInfoFragment"
+        android:name="com.github.wensimin.boliboli_android.ui.voice.VoiceInfoFragment"
+        android:label="fragment_voice_info"
+        tools:layout="@layout/fragment_voice_info" />
 </navigation>

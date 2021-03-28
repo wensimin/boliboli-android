@@ -2,6 +2,7 @@ package com.github.wensimin.boliboli_android
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -26,11 +27,14 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
         val navController = findNavController(R.id.nav_host_fragment)
         binding.navView.setupWithNavController(navController)
-//        binding.navView.setOnNavigationItemSelectedListener {
-//            //TODO reuse fragment
-//            logD("select title ${it.title}")
-//            true
-//        }
+        //TODO 无导航栏fragment集合,目前写死info
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.voiceInfoFragment) {
+                binding.navView.visibility = View.GONE
+            } else {
+                binding.navView.visibility = View.VISIBLE
+            }
+        }
     }
 
 }

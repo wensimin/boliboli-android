@@ -15,7 +15,7 @@ class VoiceInfoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        logD("start info id: ${savedInstanceState?.getString("id")}")
+        logD("start info id: ${arguments?.getString("id")}")
         return FragmentVoiceInfoBinding.inflate(inflater).root
     }
 
