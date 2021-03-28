@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import com.github.wensimin.boliboli_android.databinding.FragmentVoiceBinding
+import com.github.wensimin.boliboli_android.utils.logD
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -103,6 +104,16 @@ class VoiceFragment : Fragment() {
 //                    binding.list.scrollToPosition(0)
 //                }
 //        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        logD("on save state")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        logD("on destroy")
     }
 
 // TODO 无效,等待activity层重用fragment

@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.plusAssign
 import androidx.navigation.ui.setupWithNavController
 import com.github.wensimin.boliboli_android.databinding.ActivityMainBinding
+import com.github.wensimin.boliboli_android.navigator.SaveStateFragmentNavigator
 import com.github.wensimin.boliboli_android.ui.base.BaseActivity
 import com.github.wensimin.boliboli_android.ui.dashboard.DashboardViewModel
 import com.github.wensimin.boliboli_android.ui.voice.VoiceListViewModel
@@ -26,6 +29,11 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navController = findNavController(R.id.nav_host_fragment)
+        // get fragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!
+        // setup custom navigator
+        val navigator = SaveStateFragmentNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment)
+        navController.navigatorProvider.addNavigator(navigator)
         binding.navView.setupWithNavController(navController)
         //TODO 无导航栏fragment集合,目前写死info
         navController.addOnDestinationChangedListener { _, destination, _ ->
