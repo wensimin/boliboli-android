@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,7 @@ import com.github.wensimin.boliboli_android.rest.dto.SimpleVoice
 /**
  * voice adapter
  */
-class VoiceAdapter(private val navController: NavController) :
+class VoiceAdapter :
     PagingDataAdapter<SimpleVoice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
     companion object {
         private val options = RequestOptions().apply {
@@ -63,7 +64,7 @@ class VoiceAdapter(private val navController: NavController) :
                             .into(this)
                     }
                     this.root.setOnClickListener {
-                        navController.navigate(
+                        it.findNavController().navigate(
                             R.id.action_navigation_voice_to_voiceInfoFragment,
                             Bundle().apply {
                                 putString("id", voice.id)
