@@ -7,9 +7,6 @@ import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
 import com.github.wensimin.boliboli_android.pojo.SimpleVoice
@@ -20,9 +17,6 @@ import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 class VoiceAdapter :
     PagingDataAdapter<SimpleVoice, VoiceAdapter.VoiceViewHolder>(DIFF_CALLBACK) {
     companion object {
-        private val options = RequestOptions().apply {
-            override(Target.SIZE_ORIGINAL)
-        }
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<SimpleVoice>() {
             override fun areItemsTheSame(oldItem: SimpleVoice, newItem: SimpleVoice) = oldItem.id == newItem.id
@@ -47,7 +41,6 @@ class VoiceAdapter :
 
     /**
      * holder 目前仅绑定voice
-     * TODO 后续应该有事件
      */
     inner class VoiceViewHolder(private val binding: VoiceListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -57,27 +50,13 @@ class VoiceAdapter :
             voice?.let {
                 binding.apply {
                     this.voice = it
-                    mainImg.apply {
-                        Glide.with(this).setDefaultRequestOptions(options)
-                            .load(it.mainImg)
-                            .into(this)
-                    }
+                    //TODO id传输可能安全化
                     this.root.setOnClickListener {
                         it.findNavController().navigate(
                             R.id.action_navigation_voice_to_voiceInfoFragment,
                             Bundle().apply {
                                 putString("id", voice.id)
                             })
-//                        // FIXME 是否使用fragment 存疑
-//                        (it.context as MainActivity)
-//                            .supportFragmentManager.beginTransaction().apply {
-//                                replace(
-//                                    R.id.container,
-//                                    VoiceInfoFragment::class.java,
-//
-//                                addToBackStack(null)
-//                                commit()
-//                            }
                     }
                 }
             }

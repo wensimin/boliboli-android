@@ -6,6 +6,5 @@ data class SimpleVoice(
     val rjId: String,
     val mainImg: String,
     val url: String,
-    val r18: Boolean,
-    val tags: List<SimpleVoiceTag>
+    val r18: Boolean
 )
