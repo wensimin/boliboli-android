@@ -9,12 +9,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.github.wensimin.boliboli_android.databinding.FragmentVoiceInfoBinding
+import com.github.wensimin.boliboli_android.pojo.SimpleVoiceMedia
 import com.github.wensimin.boliboli_android.pojo.SimpleVoiceTag
 
 @BindingAdapter("voiceTagItems")
-fun setItems(view: RecyclerView, items: List<SimpleVoiceTag>?) {
+fun setTagsItems(view: RecyclerView, items: List<SimpleVoiceTag>?) {
     items?.let {
         (view.adapter as VoiceTagsAdapter).submitList(it)
+    }
+}
+
+@BindingAdapter("voiceMediaItems")
+fun setMediasItems(view: RecyclerView, items: List<SimpleVoiceMedia>?) {
+    items?.let {
+        (view.adapter as VoiceMediasAdapter).submitList(it)
     }
 }
 
@@ -34,6 +42,7 @@ class VoiceInfoFragment : Fragment() {
             lifecycleOwner = this@VoiceInfoFragment
         }.also {
             it.tags.adapter = VoiceTagsAdapter()
+            it.medias.adapter = VoiceMediasAdapter()
             binding = it
         }.root
     }
