@@ -11,5 +11,5 @@ data class SimpleVoiceMedia(
     val type: MediaType,
     val size: Long,
     val trackLength: Long?,
-    var folder: String?
+    var folder: String
 )

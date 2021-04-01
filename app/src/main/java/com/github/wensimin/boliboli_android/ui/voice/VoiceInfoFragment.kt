@@ -24,12 +24,11 @@ fun setTagsItems(view: RecyclerView, items: List<SimpleVoiceTag>?) {
 
 
 @BindingAdapter("voiceMediaItems")
-fun setMediasItems(view: RecyclerView, items: List<SimpleVoiceMedia>?) {
-    items?.let {
-        //TODO 处理数据
-        (view.adapter as GroupAdapter<*>).addAll(it.map { item ->
-            ExpandableGroup(VoiceMediaHeader(item.filename)).apply {
-                addAll(it.map(::VoiceMediaItem))
+fun setMediasItems(view: RecyclerView, medias: Map<String, List<SimpleVoiceMedia>>?) {
+    medias?.let {
+        (view.adapter as GroupAdapter<*>).addAll(it.map { (k, v) ->
+            ExpandableGroup(VoiceMediaHeader(k)).apply {
+                addAll(v.map((::VoiceMediaItem)))
             }
         })
     }
