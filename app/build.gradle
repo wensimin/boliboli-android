@@ -44,7 +44,10 @@ android {
 }
 def paging_version = "3.0.0-beta02"
 def glide_version = "4.11.0"
+def groupie_version = "2.9.0"
 dependencies {
+    implementation "com.xwray:groupie:$groupie_version"
+    implementation "com.xwray:groupie-databinding:$groupie_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
