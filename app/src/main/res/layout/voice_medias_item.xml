@@ -8,24 +8,21 @@
             type="com.github.wensimin.boliboli_android.pojo.SimpleVoiceMedia" />
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:paddingEnd="10dp"
-        android:paddingRight="10dp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:paddingStart="10dp"-->
+<!--        android:paddingEnd="10dp">-->
 
 
         <TextView
             android:id="@+id/filename"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@{item.filename}" />
 
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 </layout>

@@ -7,13 +7,19 @@ import com.xwray.groupie.ExpandableItem
 import com.xwray.groupie.databinding.BindableItem
 
 class VoiceMediaHeader(private val title: String) : BindableItem<VoiceMediasItemFolderBinding>(), ExpandableItem {
+    private lateinit var expandableGroup: ExpandableGroup
 
     override fun setExpandableGroup(onToggleListener: ExpandableGroup) {
-        //TODO 点击切换
+        expandableGroup = onToggleListener
     }
 
     override fun bind(viewBinding: VoiceMediasItemFolderBinding, position: Int) {
         viewBinding.title = title
+        //TODO 图标
+        viewBinding.titleView.setOnClickListener {
+            expandableGroup.onToggleExpanded()
+        }
+
     }
 
     override fun getLayout(): Int = R.layout.voice_medias_item_folder
