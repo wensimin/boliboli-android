@@ -1,13 +1,11 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.VoiceListItemBinding
 import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 
@@ -48,15 +46,11 @@ class VoiceAdapter :
 
         fun bind(voice: SimpleVoice?) {
             voice?.let {
-                binding.apply {
+                binding.run {
                     this.voice = it
-                    //TODO id传输可能安全化
                     this.root.setOnClickListener {
-                        it.findNavController().navigate(
-                            R.id.action_navigation_voice_to_voiceInfoFragment,
-                            Bundle().apply {
-                                putString("id", voice.id)
-                            })
+                        it.findNavController()
+                            .navigate(VoiceFragmentDirections.actionNavigationVoiceToVoiceInfoFragment(voice.id))
                     }
                 }
             }

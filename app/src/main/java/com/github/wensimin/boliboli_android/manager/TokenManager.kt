@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.preference.PreferenceManager
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.utils.logD
 import net.openid.appauth.*
@@ -50,7 +49,6 @@ class TokenManager(
 
 
     private var service: AuthorizationService = AuthorizationService(context, testConfig)
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val authState: AuthState = AuthState()
     private val launcher = context.registerForActivityResult(object :
         ActivityResultContract<AuthorizationRequest, Intent?>() {
@@ -101,7 +99,7 @@ class TokenManager(
                 error.accept(tokenException)
             } else {
                 //save token
-                TokenStatus.setAuthState(authState, preferences)
+                TokenStatus.setAuthState(authState)
                 success.run()
             }
         }

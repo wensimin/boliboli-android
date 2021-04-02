@@ -1,6 +1,5 @@
 package com.github.wensimin.boliboli_android.manager
 
-import android.content.SharedPreferences
 import com.github.wensimin.boliboli_android.rest.exception.AuthException
 import net.openid.appauth.AuthState
 import net.openid.appauth.ClientSecretBasic
@@ -20,14 +19,14 @@ import org.springframework.web.client.HttpClientErrorException
 /**
  * 同步请求,不使用原有方法
  */
-fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic, preferences: SharedPreferences): String {
+fun AuthState.requestAccessToken(clientSecretBasic: ClientSecretBasic): String {
     if (!needsTokenRefresh) {
         return this.accessToken!!
     }
     return try {
         val tokenResponse = asyncRefreshTokenRequest(createTokenRefreshRequest(), clientSecretBasic)
         this.update(tokenResponse, null)
-        TokenStatus.setAuthState(this, preferences)
+        TokenStatus.setAuthState(this)
         tokenResponse.accessToken!!
     } catch (e: HttpClientErrorException) {
         // 对400错误码做包装授权错误

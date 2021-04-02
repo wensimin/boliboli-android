@@ -1,9 +1,9 @@
 package com.github.wensimin.boliboli_android.ui.voice
 
+import androidx.navigation.findNavController
 import com.github.wensimin.boliboli_android.R
 import com.github.wensimin.boliboli_android.databinding.VoiceMediasItemBinding
 import com.github.wensimin.boliboli_android.pojo.SimpleVoiceMedia
-import com.github.wensimin.boliboli_android.utils.logD
 import com.xwray.groupie.databinding.BindableItem
 
 class VoiceMediaItem(private val media: SimpleVoiceMedia) : BindableItem<VoiceMediasItemBinding>() {
@@ -11,9 +11,13 @@ class VoiceMediaItem(private val media: SimpleVoiceMedia) : BindableItem<VoiceMe
         viewBinding.apply {
             item = this@VoiceMediaItem.media
         }.also {
-            it.root.setOnClickListener {
-                // TODO
-                logD("click ${media.id}")
+            it.root.setOnClickListener { view ->
+                view.findNavController().navigate(
+                    VoiceInfoFragmentDirections.actionVoiceInfoFragmentToMediaPlayerFragment(
+                        media.id,
+                        media.type
+                    )
+                )
             }
         }
     }

@@ -5,9 +5,15 @@ import androidx.navigation.NavDestination
 import com.github.wensimin.boliboli_android.R
 
 /**
- * 不需要导航栏的fragment id集合
+ * 全屏的destination id集合
  */
-private val noNavDestination = listOf(R.id.voiceInfoFragment)
+private val fullScreenDestination = listOf(R.id.mediaPlayerFragment)
+
+/**
+ * 不需要导航栏的destination id集合 包含全屏destination
+ */
+private val noNavDestination = listOf(R.id.voiceInfoFragment) + fullScreenDestination
+
 
 /**
  * 是否需要导航栏
@@ -15,6 +21,9 @@ private val noNavDestination = listOf(R.id.voiceInfoFragment)
 fun NavDestination.needNav() = !noNavDestination.contains(this.id)
 
 /**
- * 获取可见性
+ * 获取导航栏可见性
  */
-fun NavDestination.getVisibility() = if (this.needNav()) View.VISIBLE else View.GONE
+fun NavDestination.getNavVisibility() = if (this.needNav()) View.VISIBLE else View.GONE
+
+
+fun NavDestination.isFullScreen() = fullScreenDestination.contains(this.id)

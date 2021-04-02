@@ -1,6 +1,7 @@
 package com.github.wensimin.boliboli_android.manager
 
-import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import com.github.wensimin.boliboli_android.Application
 import net.openid.appauth.AuthState
 
 
@@ -9,8 +10,9 @@ import net.openid.appauth.AuthState
  */
 object TokenStatus {
     private var authState: AuthState? = null
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(Application.context)
 
-    fun getAuthState(preferences: SharedPreferences): AuthState? {
+    fun getAuthState(): AuthState? {
         if (authState != null) {
             return authState
         }
@@ -19,7 +21,7 @@ object TokenStatus {
         return authState
     }
 
-    fun setAuthState(authState: AuthState, preferences: SharedPreferences) {
+    fun setAuthState(authState: AuthState) {
         this.authState = authState
         preferences.edit().putString(TokenManager.TOKEN_KEY, authState.jsonSerializeString()).apply()
     }

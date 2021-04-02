@@ -40,7 +40,7 @@ object RestApi {
     private val globalErrorHandler: ResponseErrorHandler
     private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
     private val jsonMapper: ObjectMapper
-    private const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
+    const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
 
     init {
         converters.apply {
@@ -177,10 +177,18 @@ object RestApi {
 
     private fun getAuthHeader(): HttpHeaders {
         return HttpHeaders().apply {
-            val authState = TokenStatus.getAuthState(preferences) ?: throw AuthException()
-            val accessToken = authState.requestAccessToken(TokenManager.clientAuthentication, preferences)
+            val authState = TokenStatus.getAuthState() ?: throw AuthException()
+            val accessToken = authState.requestAccessToken(TokenManager.clientAuthentication)
             this["Authorization"] = "Bearer $accessToken"
         }
+    }
+
+    /**
+     * 异步方法,在io进程获取header
+     * 需要自己处理AuthException
+     */
+    suspend fun getAuthHeaderInIo(): HttpHeaders {
+        return withContext(Dispatchers.IO) { getAuthHeader() }
     }
 
     fun buildTemplate(): RestTemplate {
