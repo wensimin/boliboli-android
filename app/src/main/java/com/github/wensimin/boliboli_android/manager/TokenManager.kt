@@ -42,7 +42,7 @@ class TokenManager(
             CLIENT_ID,  // Client ID
             ResponseTypeValues.CODE,
             Uri.parse("boliboli://oauth2") // Redirect URI
-        ).setScope("profile openid") //scope
+        ).setScope("openid") //scope
             .build()
     }
 
