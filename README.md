@@ -14,7 +14,7 @@ TODO list
     * NSFW模式
     * playlist
     * 收藏
-    * video模块(极低优先级)
+    * movie模块(极低优先级)
 * UI
     * cardview
     * NSFW切换动画
