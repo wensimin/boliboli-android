@@ -104,16 +104,4 @@ class VoiceFragment : Fragment() {
 //                }
 //        }
     }
-
-// TODO 无效,等待activity层重用fragment
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        outState.putInt("scroll", binding.list.scrollY)
-//    }
-//
-//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-//        super.onViewStateRestored(savedInstanceState)
-//        savedInstanceState?.getInt("scroll")?.let {
-//            binding.list.scrollToPosition(it)
-//        }
-//    }
 }

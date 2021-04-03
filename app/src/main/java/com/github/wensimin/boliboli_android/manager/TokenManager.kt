@@ -21,7 +21,6 @@ class TokenManager(
     }
 ) {
     companion object {
-        //TODO config
         const val TOKEN_KEY = "TOKEN_KEY"
         private const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
         private const val CLIENT_ID = "boliboli-android"

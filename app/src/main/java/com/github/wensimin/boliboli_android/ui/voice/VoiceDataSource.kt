@@ -7,7 +7,6 @@ import com.github.wensimin.boliboli_android.pojo.SimpleVoice
 import com.github.wensimin.boliboli_android.utils.logD
 import com.github.wensimin.boliboli_android.utils.logI
 
-//TODO rest 存储库模式
 class VoiceDataSource(private val keyword: String = "") : PagingSource<Int, SimpleVoice>() {
     override fun getRefreshKey(state: PagingState<Int, SimpleVoice>): Int? {
         return state.anchorPosition?.let {
