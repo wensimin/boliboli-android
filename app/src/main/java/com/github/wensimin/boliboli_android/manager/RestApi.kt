@@ -40,7 +40,7 @@ object RestApi {
     private val globalErrorHandler: ResponseErrorHandler
     private val clientHttpRequestFactory: SimpleClientHttpRequestFactory
     private val jsonMapper: ObjectMapper
-    const val RESOURCE_SERVER: String = "http://192.168.0.201:8080/boliboli-api"
+    const val RESOURCE_SERVER: String = "https://boliboli.xyz:3000/boliboli-api"
 
     init {
         converters.apply {

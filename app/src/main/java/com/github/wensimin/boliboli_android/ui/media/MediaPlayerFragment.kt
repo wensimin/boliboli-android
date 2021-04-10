@@ -42,6 +42,7 @@ class MediaPlayerFragment : Fragment() {
         player = SimpleExoPlayer.Builder(requireContext())
             .setMediaSourceFactory(DefaultMediaSourceFactory(sourceFactory))
             .build().apply {
+                // NETWORK 目前使用资源服务器，可切换内网
                 addMediaItem(MediaItem.fromUri("${RestApi.RESOURCE_SERVER}/voice/media/${args.id}"))
                 playWhenReady = true
                 prepare()

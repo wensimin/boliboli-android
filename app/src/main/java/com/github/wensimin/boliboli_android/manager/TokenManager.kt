@@ -7,9 +7,6 @@ import androidx.activity.result.contract.ActivityResultContract
 import com.github.wensimin.boliboli_android.LoginActivity
 import com.github.wensimin.boliboli_android.utils.logD
 import net.openid.appauth.*
-import net.openid.appauth.connectivity.ConnectionBuilder
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.function.Consumer
 
 
@@ -22,13 +19,9 @@ class TokenManager(
 ) {
     companion object {
         const val TOKEN_KEY = "TOKEN_KEY"
-        private const val OAUTH_SERVER: String = "http://192.168.0.201:81/authorization"
+        private const val OAUTH_SERVER: String = "https://boliboli.xyz:3000/authorization"
         private const val CLIENT_ID = "boliboli-android"
         private const val CLIENT_SECRET = "androidSecret"
-
-        // test config 无视https TODO 正式删除
-        private val testConfig =
-            AppAuthConfiguration.Builder().setConnectionBuilder(TestConnectionBuilder()).build()
 
         // Client secret
         val clientAuthentication: ClientSecretBasic = ClientSecretBasic(CLIENT_SECRET)
@@ -47,7 +40,7 @@ class TokenManager(
     }
 
 
-    private var service: AuthorizationService = AuthorizationService(context, testConfig)
+    private var service: AuthorizationService = AuthorizationService(context)
     private val authState: AuthState = AuthState()
     private val launcher = context.registerForActivityResult(object :
         ActivityResultContract<AuthorizationRequest, Intent?>() {
@@ -101,19 +94,6 @@ class TokenManager(
                 TokenStatus.setAuthState(authState)
                 success.run()
             }
-        }
-    }
-
-    /**
-     * TODO delete 测试用conn 无视https
-     */
-    class TestConnectionBuilder : ConnectionBuilder {
-        override fun openConnection(uri: Uri): HttpURLConnection {
-            val conn = URL(uri.toString()).openConnection() as HttpURLConnection
-            conn.connectTimeout = 1500
-            conn.readTimeout = 2000
-            conn.instanceFollowRedirects = false
-            return conn
         }
     }
 
