@@ -7,13 +7,10 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
-    // 启用数据绑定
-    dataBinding {
-        enabled = true
-    }
-    // 启用视图绑定
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        // 数据视图绑定
+        dataBinding true
+        viewBinding true
     }
     defaultConfig {
         applicationId "com.github.wensimin.boliboli_android"
@@ -63,6 +60,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.2'
     // oauth2
     implementation 'net.openid:appauth:0.8.0'
+    // JWT decode
+    implementation 'com.auth0.android:jwtdecode:2.0.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'androidx.fragment:fragment-ktx:1.3.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
